@@ -4,6 +4,10 @@ pandas>=3.1
 pyarrow>=26.0
 scipy>=1.18
 
+# Data acquisition (ClinicalTrials.gov API)
+requests>=2.32
+tqdm>=4.67
+
 # Machine learning
 scikit-learn>=1.9
 imbalanced-learn>=0.14
