@@ -3,7 +3,7 @@ BIN := $(VENV)/bin
 PYTHON_VERSION := $(shell cat .python-version)
 UV := $(shell command -v uv 2>/dev/null)
 
-.PHONY: help setup hooks lint format test
+.PHONY: help setup hooks lint format test notebook
 
 help: ## Show available targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "}; {printf "  %-8s %s\n", $$1, $$2}'
@@ -31,3 +31,6 @@ format: ## Auto-fix lint issues and format Python + notebooks with ruff
 
 test: ## Run the test suite
 	$(BIN)/pytest
+
+notebook: ## Launch JupyterLab using the dev venv
+	$(BIN)/jupyter lab
