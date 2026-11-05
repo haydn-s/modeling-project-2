@@ -1,5 +1,8 @@
 -r requirements.txt
 
+# This repo's own package (src/trial_outcome), installed in editable mode
+-e .
+
 # Tooling (keep ruff in sync with .pre-commit-config.yaml)
 pre-commit>=4.0
 ruff==0.17.3
