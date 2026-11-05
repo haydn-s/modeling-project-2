@@ -2,6 +2,62 @@
 
 Team 9: Haydn Stucker, Sabrina Grewal
 
+## Project
+
+**Objective:** build a model that predicts the probability that a clinical trial succeeds.
+
+- **Data:** ClinicalTrials.gov, pulled through the API (`trial_outcome.data.ctgov`) or downloaded in full with the provided notebook
+- **Labels:** an existing labeled set of trials, or a set we label ourselves (`trial_outcome.labeling`)
+- **Model:** any algorithm
+
+### Deliverables
+
+- [ ] **Presentation** (10 min max): objective, data used, labeling approach, data pipeline, features, models, evaluation approach, performance, and interpretation. Explain the decisions we made and why.
+- [ ] **Writeup** (2–4 pages, `docs/writeup.md`): our approach and how we applied what we learned in class. *No AI use allowed for the writeup.*
+- [ ] **Code repo** (this repository)
+
+## Repository layout
+
+```
+├── data/                   # local only (gitignored); see data/README.md
+│   ├── raw/                #   untouched downloads
+│   ├── external/           #   third-party data, e.g. an existing labeled set
+│   ├── interim/            #   intermediate tables
+│   └── processed/          #   model-ready features + labels
+├── docs/writeup.md         # project writeup (human-written)
+├── models/                 # trained model artifacts (gitignored)
+├── notebooks/              # exploration; see notebooks/README.md for naming
+├── reports/figures/        # figures for the presentation
+├── src/trial_outcome/      # importable project package
+│   ├── config.py           #   paths and constants
+│   ├── data/ctgov.py       #   ClinicalTrials.gov API v2 client + CLI
+│   ├── labeling.py         #   nct_id -> label (1 = success, 0 = failure)
+│   ├── features.py         #   study records -> feature table
+│   ├── modeling.py         #   training and model persistence
+│   ├── evaluation.py       #   ROC AUC, PR AUC, Brier, log loss, thresholded metrics
+│   └── visualization.py    #   ROC / PR / calibration plots, figure saving
+└── tests/                  # pytest suite (also runs the docstring examples in src/)
+```
+
+`labeling.build_labels`, `features.build_features`, and `modeling.train_model` are placeholders. Filling them in is where the project decisions live.
+
+### Getting data from ClinicalTrials.gov
+
+```bash
+# How many trials match?
+python -m trial_outcome.data.ctgov --out /dev/null --count-only --param query.cond="breast cancer"
+```
+
+```bash
+# Download them as JSON Lines into data/raw/
+python -m trial_outcome.data.ctgov \
+  --param query.cond="breast cancer" \
+  --param "filter.overallStatus=COMPLETED|TERMINATED" \
+  --out data/raw/ctgov_breast_cancer.jsonl
+```
+
+Any [API v2 query parameter](https://clinicaltrials.gov/data-api/api) can be passed with `--param`. Record each pull in `data/README.md`.
+
 ## Development setup
 
 Requires Python 3.12 (see `.python-version`). [uv](https://docs.astral.sh/uv/) is used if it's installed; otherwise the standard `venv` + `pip` path is used.
