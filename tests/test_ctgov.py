@@ -90,3 +90,56 @@ def test_parse_param_keeps_equals_in_value():
         "filter.advanced",
         "AREA[Phase]PHASE2",
     )
+
+
+@pytest.mark.parametrize("limit", [0, -1])
+def test_iter_studies_rejects_nonpositive_limits(limit):
+    session = FakeSession({})
+    with pytest.raises(ValueError, match="max_studies must be positive"):
+        list(ctgov.iter_studies(max_studies=limit, session=session))
+    assert session.calls == []
+
+
+def test_failed_download_preserves_existing_snapshot(tmp_path):
+    path = tmp_path / "studies.jsonl"
+    path.write_text('{"previous": true}\n')
+    session = FakeSession({None: {"studies": [study("NCT1")], "nextPageToken": "missing"}})
+    with pytest.raises(KeyError):
+        ctgov.download_studies(path, session=session, progress=False)
+    assert path.read_text() == '{"previous": true}\n'
+    assert list(tmp_path.iterdir()) == [path]
+
+
+def test_owned_sessions_are_closed(monkeypatch):
+    session = FakeSession({None: {"studies": [], "totalCount": 0}})
+    closed = []
+    session.close = lambda: closed.append(True)
+    monkeypatch.setattr(ctgov, "make_session", lambda: session)
+    assert list(ctgov.iter_studies()) == []
+    assert ctgov.count_studies() == 0
+    assert closed == [True, True]
+
+
+def test_repeated_pagination_token_fails():
+    session = FakeSession(
+        {
+            None: {"studies": [], "nextPageToken": "same"},
+            "same": {"studies": [], "nextPageToken": "same"},
+        }
+    )
+    with pytest.raises(ValueError, match="repeated nextPageToken"):
+        list(ctgov.iter_studies(session=session))
+
+
+@pytest.mark.parametrize("payload", [{}, {"studies": {}}, {"studies": [42]}])
+def test_malformed_api_response_fails(payload):
+    with pytest.raises(ValueError, match="studies list"):
+        list(ctgov.iter_studies(session=FakeSession({None: payload})))
+
+
+@pytest.mark.parametrize("content", ["{}\nnot-json\n", "{}\n[1, 2]\n"])
+def test_jsonl_reports_path_and_line(tmp_path, content):
+    path = tmp_path / "malformed.jsonl"
+    path.write_text(content)
+    with pytest.raises(ValueError, match="malformed.jsonl:2"):
+        ctgov.read_jsonl(path)
