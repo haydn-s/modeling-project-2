@@ -20,7 +20,9 @@ from __future__ import annotations
 import argparse
 import json
 from collections.abc import Iterable, Iterator, Mapping
+from contextlib import closing, nullcontext
 from pathlib import Path
+from tempfile import NamedTemporaryFile
 from typing import Any
 
 import requests
@@ -65,56 +67,92 @@ def iter_studies(
     if not 1 <= page_size <= MAX_PAGE_SIZE:
         raise ValueError(f"page_size must be between 1 and {MAX_PAGE_SIZE}, got {page_size}")
     if max_studies is not None:
+        if max_studies < 1:
+            raise ValueError("max_studies must be positive")
         page_size = min(page_size, max_studies)
+    if timeout <= 0:
+        raise ValueError("timeout must be positive")
 
-    session = session or make_session()
     query: dict[str, Any] = {**(params or {}), "pageSize": page_size, "format": "json"}
+    context = nullcontext(session) if session is not None else closing(make_session())
+    with context as client:
+        yielded = 0
+        seen_tokens = set()
+        while True:
+            response = client.get(BASE_URL, params=query, timeout=timeout)
+            response.raise_for_status()
+            payload = response.json()
+            studies = payload.get("studies")
+            if not isinstance(studies, list) or any(not isinstance(s, dict) for s in studies):
+                raise ValueError("API response must contain a studies list of objects")
 
-    yielded = 0
-    while True:
-        response = session.get(BASE_URL, params=query, timeout=timeout)
-        response.raise_for_status()
-        payload = response.json()
+            for study in studies:
+                yield study
+                yielded += 1
+                if max_studies is not None and yielded >= max_studies:
+                    return
 
-        for study in payload.get("studies", []):
-            yield study
-            yielded += 1
-            if max_studies is not None and yielded >= max_studies:
+            next_token = payload.get("nextPageToken")
+            if not next_token:
                 return
-
-        next_token = payload.get("nextPageToken")
-        if not next_token:
-            return
-        query["pageToken"] = next_token
+            if next_token in seen_tokens:
+                raise ValueError("API returned a repeated nextPageToken")
+            seen_tokens.add(next_token)
+            query["pageToken"] = next_token
 
 
 def count_studies(
     params: Mapping[str, Any] | None = None, *, session: requests.Session | None = None
 ) -> int:
     """Return the total number of studies matching ``params`` without downloading them."""
-    session = session or make_session()
     query = {**(params or {}), "pageSize": 1, "countTotal": "true", "format": "json"}
-    response = session.get(BASE_URL, params=query, timeout=60)
-    response.raise_for_status()
-    return int(response.json()["totalCount"])
+    context = nullcontext(session) if session is not None else closing(make_session())
+    with context as client:
+        response = client.get(BASE_URL, params=query, timeout=60)
+        response.raise_for_status()
+        return int(response.json()["totalCount"])
 
 
 def write_jsonl(records: Iterable[Mapping[str, Any]], path: str | Path) -> int:
-    """Write records to ``path`` as JSON Lines and return how many were written."""
+    """Atomically write JSON Lines; leave any previous file intact on failure."""
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     n = 0
-    with path.open("w", encoding="utf-8") as f:
-        for record in records:
-            f.write(json.dumps(record, ensure_ascii=False) + "\n")
-            n += 1
+    temporary = None
+    try:
+        with NamedTemporaryFile(
+            mode="w", encoding="utf-8", dir=path.parent, prefix=f".{path.name}.", delete=False
+        ) as f:
+            temporary = Path(f.name)
+            for record in records:
+                f.write(json.dumps(record, ensure_ascii=False) + "\n")
+                n += 1
+        temporary.replace(path)
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
     return n
+
+
+def iter_jsonl(path: str | Path) -> Iterator[dict[str, Any]]:
+    """Read study objects with actionable filename/line errors for malformed input."""
+    path = Path(path)
+    with path.open(encoding="utf-8") as f:
+        for line_number, line in enumerate(f, 1):
+            if not line.strip():
+                continue
+            try:
+                record = json.loads(line)
+            except json.JSONDecodeError as error:
+                raise ValueError(f"{path}:{line_number}: invalid JSON: {error.msg}") from error
+            if not isinstance(record, dict):
+                raise ValueError(f"{path}:{line_number}: expected a study object")
+            yield record
 
 
 def read_jsonl(path: str | Path) -> list[dict[str, Any]]:
     """Load a JSON Lines file written by :func:`write_jsonl`."""
-    with Path(path).open(encoding="utf-8") as f:
-        return [json.loads(line) for line in f if line.strip()]
+    return list(iter_jsonl(path))
 
 
 def download_studies(
