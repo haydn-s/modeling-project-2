@@ -94,6 +94,12 @@ def test_changed_file_is_rejected(top_dir):
         top.load_top(top_dir)
 
 
+def test_missing_file_names_the_labels_command(top_dir):
+    (top_dir / "phase_II_valid.csv").unlink()
+    with pytest.raises(FileNotFoundError, match=r"python -m trial_outcome\.data\.top labels`"):
+        top.load_top(top_dir)
+
+
 @pytest.mark.parametrize(
     "change,message",
     [

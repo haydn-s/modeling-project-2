@@ -123,7 +123,9 @@ def load_top(top_dir: str | Path = TOP_DIR) -> pd.DataFrame:
             name = top_filename(phase, split)
             path = top_dir / name
             if not path.exists():
-                raise FileNotFoundError(f"missing {path}; run `python -m trial_outcome.data.top`")
+                raise FileNotFoundError(
+                    f"missing {path}; run `python -m trial_outcome.data.top labels`"
+                )
             if _sha256(path) != TOP_SHA256[name]:
                 raise ValueError(f"{path} does not match the pinned TOP commit; download it again")
             frame = pd.read_csv(
