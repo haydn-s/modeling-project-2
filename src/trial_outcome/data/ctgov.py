@@ -141,7 +141,7 @@ def _parse_param(raw: str) -> tuple[str, str]:
 
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description="Download studies from ClinicalTrials.gov.")
-    parser.add_argument("--out", required=True, type=Path, help="output .jsonl path")
+    parser.add_argument("--out", type=Path, help="output .jsonl path (unused with --count-only)")
     parser.add_argument(
         "--param",
         action="append",
@@ -158,6 +158,8 @@ def main(argv: list[str] | None = None) -> None:
     if args.count_only:
         print(count_studies(params))
         return
+    if args.out is None:
+        parser.error("--out is required unless --count-only is given")
     n = download_studies(args.out, params, max_studies=args.max_studies)
     print(f"Wrote {n} studies to {args.out}")
 

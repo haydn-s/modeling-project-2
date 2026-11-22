@@ -45,7 +45,7 @@ Team 9: Haydn Stucker, Sabrina Grewal
 
 ```bash
 # How many trials match?
-python -m trial_outcome.data.ctgov --out /dev/null --count-only --param query.cond="breast cancer"
+python -m trial_outcome.data.ctgov --count-only --param query.cond="breast cancer"
 ```
 
 ```bash

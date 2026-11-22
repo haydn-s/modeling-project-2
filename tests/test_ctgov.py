@@ -90,3 +90,26 @@ def test_parse_param_keeps_equals_in_value():
         "filter.advanced",
         "AREA[Phase]PHASE2",
     )
+
+
+def test_main_count_only_needs_no_out(monkeypatch, capsys):
+    seen = {}
+
+    def fake_count(params):
+        seen["params"] = params
+        return 42
+
+    monkeypatch.setattr(ctgov, "count_studies", fake_count)
+
+    ctgov.main(["--count-only", "--param", "query.cond=asthma"])
+
+    assert capsys.readouterr().out.strip() == "42"
+    assert seen["params"] == {"query.cond": "asthma"}
+
+
+def test_main_requires_out_when_downloading(capsys):
+    with pytest.raises(SystemExit) as excinfo:
+        ctgov.main(["--param", "query.cond=asthma"])
+
+    assert excinfo.value.code == 2
+    assert "--out is required" in capsys.readouterr().err
