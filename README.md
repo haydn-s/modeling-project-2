@@ -10,7 +10,11 @@ Requires Python 3.12 (see `.python-version`). [uv](https://docs.astral.sh/uv/) i
 make setup
 ```
 
-This creates a virtual environment in `dev/`, installs `requirements-dev.txt` (the ML / data-science stack plus tooling), and installs the git hooks. Activate it with:
+This creates a virtual environment in `dev/`, installs `requirements-dev.txt` (the ML / data-science stack plus tooling), and installs the git hooks.
+
+With uv, PyTorch is installed for your hardware: the CUDA build if an NVIDIA driver is found, otherwise the CPU build (on macOS, the standard build, which supports Apple's MPS GPU). To force a build, run `make setup TORCH_BACKEND=cpu` (or a CUDA version such as `cu128`). Without uv, pip installs PyPI's default torch, which on Linux is the multi-GB CUDA build.
+
+Activate the environment with:
 
 ```bash
 source dev/bin/activate

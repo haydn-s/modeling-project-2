@@ -2,6 +2,9 @@ VENV := dev
 BIN := $(VENV)/bin
 PYTHON_VERSION := $(shell cat .python-version)
 UV := $(shell command -v uv 2>/dev/null)
+# PyTorch build for uv to install: auto (CUDA if an NVIDIA driver is found,
+# else CPU), cpu, or a CUDA version such as cu128. CI always uses cpu.
+TORCH_BACKEND ?= auto
 
 .PHONY: help setup hooks lint format test
 
@@ -11,7 +14,7 @@ help: ## Show available targets
 setup: ## Create the `dev` venv, install dependencies, and install git hooks
 ifdef UV
 	uv venv $(VENV) --python $(PYTHON_VERSION) --seed --allow-existing
-	uv pip install --python $(BIN)/python -r requirements-dev.txt
+	uv pip install --python $(BIN)/python --torch-backend $(TORCH_BACKEND) -r requirements-dev.txt
 else
 	python$(PYTHON_VERSION) -m venv $(VENV)
 	$(BIN)/pip install --upgrade pip
