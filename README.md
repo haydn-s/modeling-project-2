@@ -105,7 +105,7 @@ It runs three steps, each of which can also be run alone:
 2. `python -m trial_outcome.data.ctgov --ids-file data/interim/top_labels/nct_ids.txt --out data/raw/ctgov_top_<date>.jsonl`: downloads the current registry record for each TOP trial, 200 IDs per request (about 60 requests).
 3. `python -m trial_outcome.data.top datasets --raw ... --output-root data/processed/top_<date>`: runs the pipeline once per phase into `phase_I/`, `phase_II/`, and `phase_III/`.
 
-Re-running `make top-data` skips steps whose output already exists. The pipeline never overwrites a build, so pass `TOP_OUTPUT=data/processed/<new name>` to rebuild. Each labels file keeps TOP's `split`, `status`, and `why_stop` columns for analysis; the build reads only `nct_id` and `label`, so they never reach `dataset.parquet`. To split a dataset for modeling:
+`<date>` is `TOP_DATE`, pinned in the `Makefile` to `2026-11-22`, the snapshot recorded in `data/README.md`. Re-running `make top-data` skips steps whose output already exists, so a second run does nothing. For a fresh registry snapshot, run `make top-data TOP_DATE=$(date +%F)` and record it in `data/README.md`. The pipeline never overwrites a build, so to rebuild from the same snapshot, pass `TOP_OUTPUT=data/processed/<new name>`. Each labels file keeps TOP's `split`, `status`, and `why_stop` columns for analysis; the build reads only `nct_id` and `label`, so they never reach `dataset.parquet`. To split a dataset for modeling:
 
 ```python
 import pandas as pd
