@@ -65,9 +65,13 @@ def test_iter_studies_respects_max_studies(two_page_session):
     assert two_page_session.calls[0]["pageSize"] == 2
 
 
-def test_iter_studies_rejects_bad_page_size():
+@pytest.mark.parametrize(
+    "kwargs", [{"page_size": 0}, {"page_size": ctgov.MAX_PAGE_SIZE + 1}, {"timeout": 0}]
+)
+def test_iter_studies_rejects_bad_arguments_on_call(kwargs):
+    # No list(): the error must come from the call itself, not from the first iteration.
     with pytest.raises(ValueError):
-        list(ctgov.iter_studies(page_size=ctgov.MAX_PAGE_SIZE + 1, session=FakeSession({})))
+        ctgov.iter_studies(session=FakeSession({}), **kwargs)
 
 
 def test_download_round_trips_through_jsonl(tmp_path, two_page_session):
@@ -119,7 +123,7 @@ def test_main_requires_out_when_downloading(capsys):
 def test_iter_studies_rejects_nonpositive_limits(limit):
     session = FakeSession({})
     with pytest.raises(ValueError, match="max_studies must be positive"):
-        list(ctgov.iter_studies(max_studies=limit, session=session))
+        ctgov.iter_studies(max_studies=limit, session=session)
     assert session.calls == []
 
 

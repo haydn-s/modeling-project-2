@@ -63,6 +63,10 @@ def iter_studies(
         max_studies: Stop after this many studies (``None`` fetches everything).
         session: Optional ``requests.Session``; defaults to :func:`make_session`.
         timeout: Per-request timeout in seconds.
+
+    Raises:
+        ValueError: If an argument is out of range. Raised by the call itself, before any
+            request is made, rather than on the first iteration.
     """
     if not 1 <= page_size <= MAX_PAGE_SIZE:
         raise ValueError(f"page_size must be between 1 and {MAX_PAGE_SIZE}, got {page_size}")
@@ -74,6 +78,17 @@ def iter_studies(
         raise ValueError("timeout must be positive")
 
     query: dict[str, Any] = {**(params or {}), "pageSize": page_size, "format": "json"}
+    return _paginate(query, max_studies=max_studies, session=session, timeout=timeout)
+
+
+def _paginate(
+    query: dict[str, Any],
+    *,
+    max_studies: int | None,
+    session: requests.Session | None,
+    timeout: float,
+) -> Iterator[dict[str, Any]]:
+    """Yield studies page by page; ``iter_studies`` validates the arguments first."""
     context = nullcontext(session) if session is not None else closing(make_session())
     with context as client:
         yielded = 0
