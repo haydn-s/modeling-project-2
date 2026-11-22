@@ -13,6 +13,11 @@ Command-line usage (writes one JSON study record per line)::
         --param "filter.overallStatus=COMPLETED|TERMINATED" \\
         --max-studies 5000 \\
         --out data/raw/ctgov_breast_cancer.jsonl
+
+To fetch a known set of trials, list one NCT ID per line in a text file::
+
+    python -m trial_outcome.data.ctgov --ids-file data/interim/top_labels/nct_ids.txt \\
+        --out data/raw/ctgov_top.jsonl
 """
 
 from __future__ import annotations
@@ -25,13 +30,18 @@ from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import Any
 
+import pandas as pd
 import requests
 from requests.adapters import HTTPAdapter
 from tqdm import tqdm
 from urllib3.util.retry import Retry
 
+from trial_outcome.data.validation import validate_nct_ids
+
 BASE_URL = "https://clinicaltrials.gov/api/v2/studies"
 MAX_PAGE_SIZE = 1000
+# 200 IDs make a ~2.4 KB query string, well under common URL length limits.
+MAX_IDS_PER_REQUEST = 200
 
 
 def make_session(retries: int = 5, backoff_factor: float = 1.0) -> requests.Session:
@@ -116,6 +126,54 @@ def _paginate(
             query["pageToken"] = next_token
 
 
+def study_nct_id(study: Mapping[str, Any]) -> Any:
+    """Return a study record's NCT ID, or ``None`` if the record has none."""
+    return study.get("protocolSection", {}).get("identificationModule", {}).get("nctId")
+
+
+def iter_studies_by_id(
+    nct_ids: Iterable[str],
+    params: Mapping[str, Any] | None = None,
+    *,
+    batch_size: int = MAX_IDS_PER_REQUEST,
+    session: requests.Session | None = None,
+    timeout: float = 60.0,
+) -> Iterator[dict[str, Any]]:
+    """Yield the records for the given NCT IDs, requesting ``batch_size`` IDs at a time.
+
+    Duplicate IDs are requested once. IDs the registry does not return are skipped; callers
+    can compare the yielded IDs with the request. A record whose ID was not requested, or
+    that arrives twice, raises ``ValueError`` because it means the ID filter was ignored.
+    Other ``params`` (e.g. ``fields``) are sent with every batch.
+    """
+    ids = list(dict.fromkeys(nct_ids))
+    if not ids:
+        raise ValueError("no NCT IDs requested")
+    validate_nct_ids(pd.Index(ids, dtype=object), source="requested IDs")
+    if not 1 <= batch_size <= MAX_PAGE_SIZE:
+        raise ValueError(f"batch_size must be between 1 and {MAX_PAGE_SIZE}, got {batch_size}")
+    if params and "filter.ids" in params:
+        raise ValueError("pass trial IDs as nct_ids, not as a filter.ids parameter")
+
+    requested, seen = set(ids), set()
+    context = nullcontext(session) if session is not None else closing(make_session())
+    with context as client:
+        for start in range(0, len(ids), batch_size):
+            batch = ids[start : start + batch_size]
+            query = {**(params or {}), "filter.ids": ",".join(batch)}
+            for study in iter_studies(query, page_size=len(batch), session=client, timeout=timeout):
+                trial_id = study_nct_id(study)
+                if trial_id not in requested:
+                    raise ValueError(
+                        f"API returned {trial_id!r}, which was not requested; "
+                        "the filter.ids parameter was not applied"
+                    )
+                if trial_id in seen:
+                    raise ValueError(f"API returned {trial_id} more than once")
+                seen.add(trial_id)
+                yield study
+
+
 def count_studies(
     params: Mapping[str, Any] | None = None, *, session: requests.Session | None = None
 ) -> int:
@@ -185,6 +243,36 @@ def download_studies(
     return write_jsonl(studies, path)
 
 
+def download_studies_by_id(
+    path: str | Path,
+    nct_ids: Iterable[str],
+    params: Mapping[str, Any] | None = None,
+    *,
+    progress: bool = True,
+    **kwargs: Any,
+) -> list[str]:
+    """Download the listed trials to a JSON Lines file. Returns the IDs that were not found."""
+    ids = list(dict.fromkeys(nct_ids))
+    found: set[str] = set()
+
+    def tracked() -> Iterator[dict[str, Any]]:
+        for study in iter_studies_by_id(ids, params, **kwargs):
+            found.add(study_nct_id(study))
+            yield study
+
+    studies: Iterable[dict[str, Any]] = tracked()
+    if progress:
+        studies = tqdm(studies, total=len(ids), unit="study", desc="ClinicalTrials.gov")
+    write_jsonl(studies, path)
+    return [trial_id for trial_id in ids if trial_id not in found]
+
+
+def read_id_file(path: str | Path) -> list[str]:
+    """Read NCT IDs, one per line; blank lines and ``#`` comments are ignored."""
+    lines = Path(path).read_text(encoding="utf-8").splitlines()
+    return [line.strip() for line in lines if line.strip() and not line.lstrip().startswith("#")]
+
+
 def _parse_param(raw: str) -> tuple[str, str]:
     key, sep, value = raw.partition("=")
     if not sep or not key:
@@ -205,9 +293,25 @@ def main(argv: list[str] | None = None) -> None:
     )
     parser.add_argument("--max-studies", type=int, default=None)
     parser.add_argument("--count-only", action="store_true", help="print the match count and exit")
+    parser.add_argument(
+        "--ids-file", type=Path, help="download exactly these trials (one NCT ID per line)"
+    )
     args = parser.parse_args(argv)
 
     params = dict(args.param)
+    if args.ids_file is not None:
+        if args.count_only or args.max_studies is not None:
+            parser.error("--ids-file cannot be combined with --count-only or --max-studies")
+        try:
+            ids = read_id_file(args.ids_file)
+            missing = download_studies_by_id(args.out, ids, params)
+        except (ValueError, OSError) as error:
+            parser.error(str(error))
+        found = len(set(ids)) - len(missing)
+        print(f"Wrote {found} studies to {args.out}")
+        if missing:
+            print(f"{len(missing)} requested IDs were not returned, e.g. {missing[:5]}")
+        return
     if args.count_only:
         print(count_studies(params))
         return

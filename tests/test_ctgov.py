@@ -170,3 +170,95 @@ def test_jsonl_reports_path_and_line(tmp_path, content):
     path.write_text(content)
     with pytest.raises(ValueError, match="malformed.jsonl:2"):
         ctgov.read_jsonl(path)
+
+
+class IdFilterSession:
+    """Serves the records whose IDs appear in ``filter.ids``, in one page per request."""
+
+    def __init__(self, available: list[str], extra: list[str] | None = None):
+        self.available = available
+        self.extra = extra or []
+        self.calls: list[dict[str, Any]] = []
+
+    def get(self, url: str, params: dict[str, Any], timeout: float) -> FakeResponse:
+        self.calls.append(dict(params))
+        requested = params["filter.ids"].split(",")
+        found = [trial_id for trial_id in requested if trial_id in self.available]
+        return FakeResponse({"studies": [study(i) for i in found + self.extra]})
+
+    def close(self) -> None:
+        pass
+
+
+def ids(*numbers: int) -> list[str]:
+    return [f"NCT{n:08d}" for n in numbers]
+
+
+def test_iter_studies_by_id_batches_and_dedupes():
+    session = IdFilterSession(ids(1, 2, 3, 4, 5))
+    studies = ctgov.iter_studies_by_id(
+        ids(1, 2, 2, 3, 4, 5), {"fields": "protocolSection"}, batch_size=2, session=session
+    )
+    assert [ctgov.study_nct_id(s) for s in studies] == ids(1, 2, 3, 4, 5)
+    assert [call["filter.ids"] for call in session.calls] == [
+        "NCT00000001,NCT00000002",
+        "NCT00000003,NCT00000004",
+        "NCT00000005",
+    ]
+    assert [call["pageSize"] for call in session.calls] == [2, 2, 1]
+    assert all(call["fields"] == "protocolSection" for call in session.calls)
+
+
+def test_download_by_id_reports_missing_trials(tmp_path):
+    out = tmp_path / "raw" / "top.jsonl"
+    session = IdFilterSession(ids(1, 3))
+    missing = ctgov.download_studies_by_id(out, ids(1, 2, 3), session=session, progress=False)
+    assert missing == ids(2)
+    assert ctgov.read_jsonl(out) == [study(i) for i in ids(1, 3)]
+
+
+@pytest.mark.parametrize("extra,message", [(ids(9), "not requested"), (ids(1), "more than once")])
+def test_ignored_id_filter_fails_without_writing(tmp_path, extra, message):
+    out = tmp_path / "top.jsonl"
+    session = IdFilterSession(ids(1, 2), extra=extra)
+    with pytest.raises(ValueError, match=message):
+        ctgov.download_studies_by_id(out, ids(1, 2), session=session, progress=False)
+    assert list(tmp_path.iterdir()) == []
+
+
+@pytest.mark.parametrize(
+    "requested,kwargs,message",
+    [
+        ([], {}, "no NCT IDs"),
+        (["NCT123"], {}, "invalid nct_id"),
+        (ids(1), {"batch_size": 0}, "batch_size"),
+        (ids(1), {"params": {"filter.ids": "NCT00000001"}}, "not as a filter.ids"),
+    ],
+)
+def test_iter_studies_by_id_rejects_bad_requests(requested, kwargs, message):
+    session = IdFilterSession([])
+    with pytest.raises(ValueError, match=message):
+        list(ctgov.iter_studies_by_id(requested, session=session, **kwargs))
+    assert session.calls == []
+
+
+def test_read_id_file_skips_blanks_and_comments(tmp_path):
+    path = tmp_path / "ids.txt"
+    path.write_text("# TOP trials\nNCT00000001\n\n  NCT00000002  \n")
+    assert ctgov.read_id_file(path) == ids(1, 2)
+
+
+def test_cli_downloads_ids_and_rejects_conflicting_options(tmp_path, monkeypatch, capsys):
+    ids_file = tmp_path / "ids.txt"
+    ids_file.write_text("NCT00000001\nNCT00000002\n")
+    out = tmp_path / "top.jsonl"
+    monkeypatch.setattr(ctgov, "make_session", lambda: IdFilterSession(ids(1)))
+    monkeypatch.setattr(ctgov, "tqdm", lambda studies, **kwargs: studies)
+
+    ctgov.main(["--ids-file", str(ids_file), "--out", str(out)])
+
+    output = capsys.readouterr().out
+    assert "Wrote 1 studies" in output
+    assert "1 requested IDs were not returned" in output
+    with pytest.raises(SystemExit):
+        ctgov.main(["--ids-file", str(ids_file), "--out", str(out), "--count-only"])
