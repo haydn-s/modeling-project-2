@@ -1,3 +1,9 @@
+# Data and model artifacts stay local; only the directory skeleton is committed
+data/*/*
+!data/*/.gitkeep
+models/*
+!models/.gitkeep
+
 # Virtual environments
 dev/
 .venv/
