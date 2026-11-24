@@ -1,0 +1,36 @@
+# Virtual environments
+dev/
+.venv/
+venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# Tooling caches
+.ruff_cache/
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Node (commitlint runs via pre-commit; nothing should be committed)
+node_modules/
+
+# Environment / secrets
+.env
+.env.*
+
+# OS / editors
+.DS_Store
+.idea/
+.vscode/
+*.swp

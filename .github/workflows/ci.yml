@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+# Job names (lint, commitlint, test) are required status checks on main.
+# See scripts/protect-main.sh before renaming any of them.
+jobs:
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version-file: .python-version
+      - uses: actions/cache@v6
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
+      - name: Run pre-commit hooks (ruff, whitespace, large files, ...)
+        run: |
+          pip install pre-commit
+          pre-commit run --all-files --show-diff-on-failure
+
+  commitlint:
+    name: commitlint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: lts/*
+      - name: Install commitlint
+        run: npm install --no-save --no-package-lock @commitlint/cli@21 @commitlint/config-conventional@21
+      - name: Lint commits in this PR
+        if: github.event_name == 'pull_request'
+        run: >-
+          npx commitlint --verbose
+          --from ${{ github.event.pull_request.base.sha }}
+          --to ${{ github.event.pull_request.head.sha }}
+      - name: Lint PR title (used as the commit message on squash merge)
+        if: github.event_name == 'pull_request'
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: echo "$PR_TITLE" | npx commitlint --verbose
+      - name: Lint pushed commit
+        if: github.event_name == 'push'
+        run: npx commitlint --verbose --last
+
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.3.3  # setup-uv publishes no floating major tag
+        with:
+          enable-cache: true
+          cache-dependency-glob: requirements*.txt
+      - name: Install dependencies (CPU-only torch; Python version from .python-version)
+        run: |
+          uv venv dev --seed
+          uv pip install --python dev/bin/python --torch-backend cpu -r requirements-dev.txt
+      - name: Run tests
+        run: |
+          status=0
+          dev/bin/pytest || status=$?
+          # Exit code 5 means "no tests collected", which is fine until tests exist.
+          if [ "$status" -ne 0 ] && [ "$status" -ne 5 ]; then exit "$status"; fi
