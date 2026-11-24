@@ -30,8 +30,9 @@ Team 9: Haydn Stucker, Sabrina Grewal
 ├── reports/figures/        # figures for the presentation
 ├── src/trial_outcome/      # importable project package
 │   ├── config.py           #   paths and constants
-│   ├── data/ctgov.py       #   ClinicalTrials.gov API v2 client + CLI
-│   ├── labeling.py         #   nct_id -> label (1 = success, 0 = failure)
+│   ├── data/ctgov.py        #   ClinicalTrials.gov API v2 client + CLI
+│   ├── data/pipeline.py    #   raw snapshot -> features, audit, optional labeled dataset
+│   ├── labeling.py         #   load/validate external labels (1 = success, 0 = failure)
 │   ├── features.py         #   study records -> feature table
 │   ├── modeling.py         #   training and model persistence
 │   ├── evaluation.py       #   ROC AUC, PR AUC, Brier, log loss, thresholded metrics
@@ -39,7 +40,7 @@ Team 9: Haydn Stucker, Sabrina Grewal
 └── tests/                  # pytest suite (also runs the docstring examples in src/)
 ```
 
-`labeling.build_labels`, `features.build_features`, and `modeling.train_model` are placeholders. Filling them in is where the project decisions live.
+The data pipeline extracts an initial set of design and eligibility features and can join an explicitly labeled dataset. Choosing the clinical-success label source, train/test split, and model remains project work; `modeling.train_model` is still a placeholder.
 
 ### Getting data from ClinicalTrials.gov
 
@@ -57,6 +58,35 @@ python -m trial_outcome.data.ctgov \
 ```
 
 Any [API v2 query parameter](https://clinicaltrials.gov/data-api/api) can be passed with `--param`. Record each pull in `data/README.md`.
+
+### Building a dataset
+
+After activating the development environment, download a small snapshot and build the initial feature tables:
+
+```bash
+python -m trial_outcome.data.ctgov \
+  --param query.cond="breast cancer" \
+  --max-studies 500 \
+  --out data/raw/ctgov_breast_cancer_sample.jsonl
+
+python -m trial_outcome.data.pipeline \
+  --raw data/raw/ctgov_breast_cancer_sample.jsonl \
+  --output-dir data/processed/breast_cancer_sample
+```
+
+The default cohort includes interventional studies. Use `--study-type OBSERVATIONAL` or `--study-type ANY` to change it. The build runs entirely from the saved snapshot, writes Parquet files plus a manifest, and refuses to overwrite an existing output directory. Use a new output directory for another run. Downloads also write atomically, so a failed request preserves any previous snapshot; use a distinct raw filename to retain a previous successful pull.
+
+To include clinical-success labels, supply a CSV or Parquet file with unique `nct_id` values and a binary `label` column, together with its source and outcome definition:
+
+```bash
+python -m trial_outcome.data.pipeline \
+  --raw data/raw/ctgov_breast_cancer_sample.jsonl \
+  --labels data/external/trial_labels.csv \
+  --label-description "SOURCE: replace with the dataset citation and success/failure definition" \
+  --output-dir data/processed/breast_cancer_labeled
+```
+
+The labels file must be obtained separately. Completed status is **not** treated as clinical success. Without a labels file, the pipeline produces features and an audit for exploration; it does not fabricate a target. See [data/README.md](data/README.md) for the output contract, feature definitions, and remaining modeling decisions.
 
 ## Development setup
 
