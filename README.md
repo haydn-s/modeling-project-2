@@ -32,6 +32,7 @@ Team 9: Haydn Stucker, Sabrina Grewal
 │   ├── config.py           #   paths and constants
 │   ├── data/ctgov.py        #   ClinicalTrials.gov API v2 client + CLI
 │   ├── data/pipeline.py    #   raw snapshot -> features, audit, optional labeled dataset
+│   ├── data/top.py         #   TOP benchmark labels -> per-phase labeled datasets
 │   ├── labeling.py         #   load/validate external labels (1 = success, 0 = failure)
 │   ├── features.py         #   study records -> feature table
 │   ├── modeling.py         #   training and model persistence
@@ -40,7 +41,7 @@ Team 9: Haydn Stucker, Sabrina Grewal
 └── tests/                  # pytest suite (also runs the docstring examples in src/)
 ```
 
-The data pipeline extracts an initial set of design and eligibility features and can join an explicitly labeled dataset. Choosing the clinical-success label source, train/test split, and model remains project work; `modeling.train_model` is still a placeholder.
+The data pipeline extracts an initial set of design and eligibility features and joins them to an explicitly labeled dataset. Labels and the train/test split come from the TOP benchmark (see [Building the TOP labeled datasets](#building-the-top-labeled-datasets)). The model is still to be chosen; `modeling.train_model` is a placeholder.
 
 ### Getting data from ClinicalTrials.gov
 
@@ -87,6 +88,35 @@ python -m trial_outcome.data.pipeline \
 ```
 
 The labels file must be obtained separately. Completed status is **not** treated as clinical success. Without a labels file, the pipeline produces features and an audit for exploration; it does not fabricate a target. See [data/README.md](data/README.md) for the output contract, feature definitions, and remaining modeling decisions.
+
+### Building the TOP labeled datasets
+
+Our labels come from **TOP** (Trial Outcome Prediction), the benchmark released with the HINT paper (Fu et al., 2022, *Patterns*). It holds 11,601 phase I–III trials labeled success (1) or failure (0); the labels come from IQVIA. TOP's split is by date: train and valid hold trials that completed before 2014, and test holds trials that started in 2014 or later. Using TOP's split means we train on the past, predict the future, and score on the same test trials as HINT.
+
+One command downloads everything and builds one labeled dataset per phase:
+
+```bash
+make top-data
+```
+
+It runs three steps, each of which can also be run alone:
+
+1. `python -m trial_outcome.data.top labels`: downloads the nine TOP files at a pinned commit into `data/external/top/`, checks their checksums, and writes `data/interim/top_labels/phase_{I,II,III}.csv` plus `nct_ids.txt`.
+2. `python -m trial_outcome.data.ctgov --ids-file data/interim/top_labels/nct_ids.txt --out data/raw/ctgov_top_<date>.jsonl`: downloads the current registry record for each TOP trial, 200 IDs per request (about 60 requests).
+3. `python -m trial_outcome.data.top datasets --raw ... --output-root data/processed/top_<date>`: runs the pipeline once per phase into `phase_I/`, `phase_II/`, and `phase_III/`.
+
+`<date>` is `TOP_DATE`, pinned in the `Makefile` to `2026-11-22`, the snapshot recorded in `data/README.md`. Re-running `make top-data` skips steps whose output already exists, so a second run does nothing. For a fresh registry snapshot, run `make top-data TOP_DATE=$(date +%F)` and record it in `data/README.md`. The pipeline never overwrites a build, so to rebuild from the same snapshot, pass `TOP_OUTPUT=data/processed/<new name>`. Each labels file keeps TOP's `split`, `status`, and `why_stop` columns for analysis; the build reads only `nct_id` and `label`, so they never reach `dataset.parquet`. To split a dataset for modeling:
+
+```python
+import pandas as pd
+from trial_outcome.data.top import load_splits
+
+dataset = pd.read_parquet("data/processed/top_2026-11-22/phase_II/dataset.parquet")
+split = load_splits("data/interim/top_labels/phase_II.csv").reindex(dataset.index)
+train, valid, test = (dataset[split == name] for name in ("train", "valid", "test"))
+```
+
+Trials registered as phase 1/2 or 2/3 appear in both phases, always with the same label, and never in one phase's test set and another phase's training set (the loader checks both). TOP is licensed for non-commercial academic use.
 
 ## Development setup
 
