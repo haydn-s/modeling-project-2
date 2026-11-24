@@ -3,7 +3,11 @@ import pytest
 
 from trial_outcome.evaluation import evaluate_probabilities
 from trial_outcome.modeling import load_model, save_model
-from trial_outcome.visualization import plot_model_diagnostics, save_figure
+from trial_outcome.visualization import (
+    plot_model_comparison,
+    plot_model_diagnostics,
+    save_figure,
+)
 
 
 @pytest.fixture
@@ -40,6 +44,17 @@ def test_diagnostics_figure_saves(tmp_path, predictions):
 
     assert len(fig.axes) == 3
     assert path.exists()
+
+
+def test_model_comparison_overlays_up_to_three_models(predictions):
+    y_true, y_prob = predictions
+
+    fig = plot_model_comparison(y_true, {"a": y_prob, "b": 1 - y_prob})
+    roc_labels = fig.axes[0].get_legend_handles_labels()[1]
+
+    assert sum(label.startswith(("a ", "b ")) for label in roc_labels) == 2
+    with pytest.raises(ValueError, match="between 1 and 3"):
+        plot_model_comparison(y_true, {name: y_prob for name in "abcd"})
 
 
 def test_model_round_trip(tmp_path):

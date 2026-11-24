@@ -16,7 +16,7 @@ TOP_OUTPUT ?= data/processed/top_$(TOP_DATE)
 # Phases are built in order (I, II, III), so phase III's manifest marks a finished build.
 TOP_BUILT := $(TOP_OUTPUT)/phase_III/manifest.json
 
-.PHONY: help setup hooks lint format test notebook top-data
+.PHONY: help setup hooks lint format test notebook top-data baseline
 
 help: ## Show available targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "}; {printf "  %-8s %s\n", $$1, $$2}'
@@ -49,6 +49,9 @@ notebook: ## Launch JupyterLab using the dev venv
 	$(BIN)/jupyter lab
 
 top-data: $(TOP_BUILT) ## Download TOP labels + their registry records; build one dataset per phase
+
+baseline: $(TOP_BUILT) ## Compare the regularized logit with XGBoost chain lengths on each TOP phase
+	$(BIN)/python -m trial_outcome.baseline --dataset-root $(TOP_OUTPUT) --labels-dir $(TOP_LABELS)
 
 $(TOP_BUILT): $(TOP_SNAPSHOT)
 	$(BIN)/python -m trial_outcome.data.top datasets \
