@@ -28,6 +28,7 @@ Team 9: Haydn Stucker, Sabrina Grewal
 ├── models/                 # trained model artifacts (gitignored)
 ├── notebooks/              # exploration; see notebooks/README.md for naming
 ├── reports/figures/        # figures for the presentation
+├── reports/baseline/       # baseline model comparison outputs (make baseline)
 ├── src/trial_outcome/      # importable project package
 │   ├── config.py           #   paths and constants
 │   ├── data/ctgov.py        #   ClinicalTrials.gov API v2 client + CLI
@@ -35,13 +36,15 @@ Team 9: Haydn Stucker, Sabrina Grewal
 │   ├── data/top.py         #   TOP benchmark labels -> per-phase labeled datasets
 │   ├── labeling.py         #   load/validate external labels (1 = success, 0 = failure)
 │   ├── features.py         #   study records -> feature table
-│   ├── modeling.py         #   training and model persistence
+│   ├── preprocessing.py    #   feature table -> model matrix (encoding, imputation, scaling)
+│   ├── modeling.py         #   regularized logit and XGBoost pipelines, persistence
+│   ├── baseline.py         #   logit vs. XGBoost chain-length comparison + CLI
 │   ├── evaluation.py       #   ROC AUC, PR AUC, Brier, log loss, thresholded metrics
-│   └── visualization.py    #   ROC / PR / calibration plots, figure saving
+│   └── visualization.py    #   ROC / PR / calibration and chain-length plots, figure saving
 └── tests/                  # pytest suite (also runs the docstring examples in src/)
 ```
 
-The data pipeline extracts an initial set of design and eligibility features and joins them to an explicitly labeled dataset. Labels and the train/test split come from the TOP benchmark (see [Building the TOP labeled datasets](#building-the-top-labeled-datasets)). The model is still to be chosen; `modeling.train_model` is a placeholder.
+The data pipeline extracts an initial set of design and eligibility features and joins them to an explicitly labeled dataset. Labels and the train/test split come from the TOP benchmark (see [Building the TOP labeled datasets](#building-the-top-labeled-datasets)). The baseline models are an L2-regularized logistic regression and XGBoost (see [Baseline models](#baseline-models)).
 
 ### Getting data from ClinicalTrials.gov
 
@@ -118,6 +121,46 @@ train, valid, test = (dataset[split == name] for name in ("train", "valid", "tes
 
 Trials registered as phase 1/2 or 2/3 appear in both phases, always with the same label, and never in one phase's test set and another phase's training set (the loader checks both). TOP is licensed for non-commercial academic use.
 
+### Baseline models
+
+`make baseline` compares two models on each phase:
+
+- **Regularized logit:** L2-regularized logistic regression. Classes are not reweighted, so its probabilities stay calibrated to the training success rate.
+- **XGBoost:** gradient-boosted trees, at several boosting chain lengths (numbers of trees).
+
+```bash
+make baseline
+# or, to change the candidates:
+python -m trial_outcome.baseline --dataset-root data/processed/top_2026-11-22 \
+  --chain-lengths 10 25 50 100 200 400 800 1600 --learning-rate 0.05 --max-depth 4
+```
+
+Both models share the preprocessing in `trial_outcome.preprocessing`, so they see the same features:
+
+- Categorical columns are one-hot encoded, with missing values as their own category.
+- Multi-valued columns are split into one 0/1 column per value. A condition, intervention type, or category needs at least `--min-count` training trials (default 10) to get its own column.
+- Numeric columns are median-imputed, given a missing-value indicator, and standardized.
+
+Every step is fitted on the training split only.
+
+How the models are fitted, selected, and scored:
+
+1. Each model is fitted on TOP's train split.
+2. The logit's `C` and XGBoost's chain length are each chosen by **validation log loss**.
+3. Every candidate is scored on train, valid, and test.
+
+Report the selected models' test scores. The other candidates' test scores are only there to draw the curves; choosing a model by them would leak the test set. XGBoost is fitted once at the longest chain length, and each shorter length is scored from its first trees. This gives exactly the same predictions as fitting the shorter chain (`tests/test_modeling.py` checks this).
+
+Outputs go to `reports/baseline/<build name>/`:
+
+- `summary.csv`: the selected models' validation and test scores
+- `metrics.csv`: every candidate on every split
+- `logit_coefficients_phase_<P>.csv`: the selected logit's coefficients
+- `figures/`: chain-length curves and test ROC / PR / calibration plots
+- `run.json`: configuration, input hashes, and library versions
+
+The selected models are saved to `models/baseline_{logit,xgboost}_phase_<P>.joblib`.
+
 ## Development setup
 
 Requires Python 3.12 (see `.python-version`). [uv](https://docs.astral.sh/uv/) is used if it's installed; otherwise the standard `venv` + `pip` path is used.
@@ -150,6 +193,7 @@ In Jupyter or VS Code, choose `dev/bin/python` as the kernel / interpreter.
 | `make format` | Auto-fix lint issues and format Python files and notebooks with ruff |
 | `make lint` | Run every pre-commit hook against the whole repo |
 | `make test` | Run the test suite with pytest |
+| `make baseline` | Compare the regularized logit with XGBoost chain lengths on each TOP phase |
 
 ## Conventions
 
