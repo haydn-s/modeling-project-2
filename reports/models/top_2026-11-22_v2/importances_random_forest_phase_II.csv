@@ -1,0 +1,514 @@
+feature,importance
+sponsor_class_INDUSTRY,0.04585342511170551
+criteria_text_1,0.03711854808972151
+criteria_text_2,0.02141092945438518
+criteria_text_5,0.02053896442192239
+criteria_text_0,0.018973337902810132
+arm_count,0.018866003116505735
+criteria_text_6,0.018809170051827463
+criteria_text_18,0.018139977422059837
+criteria_text_40,0.01752262671466854
+criteria_text_16,0.016717122060983247
+criteria_text_38,0.0165786567782756
+criteria_text_24,0.016478904931244504
+criteria_text_4,0.01631755931630398
+criteria_text_7,0.016149882296714324
+criteria_text_10,0.016146576021311764
+criteria_text_15,0.016062336045685133
+criteria_text_17,0.01577051815655014
+criteria_text_8,0.01571664972107307
+criteria_text_34,0.015678059084826286
+criteria_text_9,0.015612593617350293
+criteria_text_46,0.015504318726001153
+criteria_text_26,0.015460991224169865
+criteria_text_19,0.0154600886900584
+criteria_text_29,0.015352823164716848
+criteria_text_32,0.015264163008153702
+criteria_text_21,0.015260752113762937
+criteria_text_49,0.015209989203449579
+criteria_text_31,0.01518697954588455
+criteria_text_11,0.015126667142001863
+criteria_text_3,0.01510551442732638
+criteria_text_20,0.015098973665169593
+criteria_text_39,0.014961179225192476
+criteria_text_22,0.014923958438172636
+criteria_text_48,0.014909192431392645
+criteria_text_43,0.01487005955887523
+criteria_text_30,0.014589415070971744
+criteria_text_28,0.014555161692780216
+criteria_text_27,0.014544440016163106
+criteria_text_47,0.014516554264287424
+criteria_text_44,0.014309304257471485
+criteria_text_42,0.01422022838494931
+criteria_text_37,0.014193232881216551
+criteria_text_41,0.01414803418548096
+criteria_text_45,0.014006100992241925
+criteria_text_25,0.013896326285970406
+criteria_text_12,0.01384280922062228
+criteria_text_36,0.013806331985106196
+criteria_text_23,0.013722932810664765
+criteria_text_33,0.013649660570948291
+criteria_text_35,0.013428211188125216
+criteria_text_14,0.012997563688724461
+criteria_text_13,0.012581010727049141
+sponsor_class_OTHER,0.008506314721637957
+minimum_age_years,0.0068206316008968555
+icd_chapters=neoplasms,0.006599221309829375
+maximum_age_years,0.005749716719911201
+sponsor_class_NIH,0.005531220203397795
+missingindicator_arm_count,0.0043511445807581615
+allocation_RANDOMIZED,0.0028389103803542572
+intervention_model_PARALLEL,0.002686370656315915
+missingindicator_maximum_age_years,0.002414919997320471
+masking_NONE,0.002265974341840351
+phases=phase1,0.0019576702916118335
+allocation_NA,0.001875754533475632
+icd_chapters=endocrine_metabolic,0.0014416380457905119
+allocation_NON_RANDOMIZED,0.0012610706553791988
+intervention_model_SINGLE_GROUP,0.0012311287083712438
+masking_DOUBLE,0.0011929044573018724
+icd_chapters=infectious,0.0011571829615267734
+icd_chapters=mental_behavioral,0.001086498425433619
+intervention_types=other,0.001039058913484109
+masking_QUADRUPLE,0.0009514273228619378
+intervention_types=biological,0.0009221480168471539
+sex_FEMALE,0.0008815943468867388
+icd_chapters=health_status_factors,0.0008753485131335849
+sex_ALL,0.0008621361574112626
+intervention_types=procedure,0.0008501936881115633
+icd_chapters=digestive,0.0007518075864757063
+intervention_model_CROSSOVER,0.0007424135887547242
+icd_categories=c78,0.0007219873991369416
+icd_chapters=nervous_system,0.000710087694828534
+phases=phase3,0.0007062215967957592
+icd_chapters=symptoms_findings,0.0007040061414707794
+icd_categories=e11,0.0007009741857202846
+masking_TRIPLE,0.0007005937197192157
+primary_purpose_TREATMENT,0.0006777309147036594
+primary_purpose_PREVENTION,0.0006773499174021412
+icd_chapters=perinatal,0.0006619515635472207
+icd_categories=c34,0.0006612504765475298
+icd_chapters=genitourinary,0.0006488292582776849
+icd_categories=k50,0.0006223914314019008
+icd_categories=d14,0.0006217142844276852
+icd_chapters=musculoskeletal,0.0006023376532859855
+icd_chapters=circulatory,0.000587293673875572
+icd_chapters=injury_poisoning,0.0005700737728541751
+icd_categories=c16,0.0005660274484144558
+icd_categories=c17,0.0005614684278026279
+icd_categories=k74,0.0005492476652821456
+icd_categories=i27,0.0005461776074806615
+icd_categories=c25,0.00054458799807504
+conditions=cancer,0.0005371832280906609
+conditions=pancreatic cancer,0.0005298712747151494
+icd_categories=c22,0.0005278153814121513
+icd_categories=c10,0.0005220434901255679
+missingindicator_minimum_age_years,0.000521574287550242
+icd_chapters=skin,0.0005196901383517585
+icd_categories=c4a,0.0005161101379655166
+icd_chapters=pregnancy,0.0005019393214020352
+conditions=metastatic breast cancer,0.0004842340974497155
+intervention_model_missing,0.0004809034131512585
+conditions=crohn's disease,0.00047859461710830753
+conditions=multiple myeloma,0.000468886509753518
+icd_categories=c7b,0.0004609744383768405
+sex_MALE,0.00045027366518237446
+icd_categories=c79,0.00044647395715757284
+icd_categories=d48,0.0004245413384543882
+intervention_types=radiation,0.0004240192970045495
+allocation_missing,0.0004209023762244327
+icd_categories=c05,0.0004094434563184558
+icd_categories=d49,0.0004026654237654752
+icd_categories=c91,0.00040263182097213026
+icd_categories=c49,0.00039406424675180124
+icd_chapters=eye,0.00039115137407512885
+icd_categories=z85,0.0003910273580508056
+icd_chapters=respiratory,0.0003879085718759179
+icd_categories=s33,0.0003812486246683726
+icd_categories=f33,0.00038059902292819864
+icd_categories=e10,0.0003792637014051168
+"conditions=carcinoma, non-small-cell lung",0.00037459954380367276
+healthy_volunteers_False,0.00037281687397537475
+icd_categories=c44,0.000370779439192707
+icd_categories=c92,0.00037044174121820926
+icd_chapters=blood_immune,0.000369155279526031
+conditions=lung cancer,0.0003683617522474188
+sponsor_class_NETWORK,0.00036398016191950376
+conditions=breast cancer,0.00035916551625459305
+icd_chapters=congenital,0.0003526853496416796
+icd_categories=d46,0.0003472781406809995
+healthy_volunteers_True,0.00034032976492511614
+conditions=acute myeloid leukemia,0.000339445253769034
+icd_categories=m05,0.0003305953416693528
+icd_chapters=external_causes,0.0003256369207847552
+icd_categories=g30,0.00032218704238472516
+icd_categories=f20,0.0003186988709250122
+icd_categories=k21,0.00031708053670894196
+icd_categories=m17,0.00031331832089876853
+icd_categories=n99,0.00031324748402733195
+icd_categories=d09,0.00031172114092704027
+icd_categories=m06,0.0003116316119415574
+conditions=chronic lymphocytic leukemia,0.00030879535975451
+conditions=metastatic colorectal cancer,0.00030300893511547486
+conditions=neoplasm metastasis,0.0003007994788289823
+masking_missing,0.0002996605515703227
+icd_categories=d02,0.00029912818548566726
+"conditions=carcinoma, renal cell",0.0002948719815258293
+conditions=lymphoma,0.00029270507937226916
+conditions=gastric cancer,0.00028594063310428703
+icd_categories=c90,0.00028184620850580896
+icd_categories=d13,0.00027383455658285915
+icd_categories=i25,0.0002734041257627361
+conditions=non-small cell lung cancer,0.00026929494815462724
+icd_categories=d24,0.0002691719621830587
+icd_categories=h35,0.0002608345793493499
+icd_categories=c43,0.000256764052323445
+icd_categories=z80,0.00025499044267413863
+icd_categories=g43,0.0002486830515059917
+icd_categories=g47,0.0002485880200148092
+icd_categories=i67,0.000245969408872258
+conditions=hiv infections,0.0002441744147870836
+icd_categories=k22,0.00024126965604414702
+intervention_model_SEQUENTIAL,0.00023674130458010476
+conditions=ovarian cancer,0.00023640196680166215
+icd_categories=g25,0.0002350952191248106
+icd_categories=d03,0.00023186859570593592
+primary_purpose_missing,0.00023091180992458948
+conditions=colorectal cancer,0.00023080174939251513
+conditions=schizophrenia,0.0002289021918228341
+conditions=stomach neoplasms,0.00021874564667838758
+icd_categories=c95,0.00021871005479955912
+conditions=hepatocellular carcinoma,0.00021505814604584682
+icd_categories=d37,0.00021419287364166174
+icd_categories=c46,0.00021353181547328117
+icd_categories=g12,0.00021256378517891945
+conditions=rheumatoid arthritis,0.00021109471105204685
+primary_purpose_BASIC_SCIENCE,0.0002094575071233006
+icd_categories=f32,0.00020924993261102275
+intervention_types=device,0.0002090504149002461
+icd_categories=b02,0.00020873303807666761
+masking_SINGLE,0.00020684527122522548
+icd_categories=n85,0.0002067520301957775
+icd_categories=z21,0.00020220153065725707
+icd_categories=j45,0.00020126741016681475
+icd_categories=j82,0.0002009629636122479
+icd_categories=j84,0.0001985417494003596
+icd_categories=z52,0.0001974603732895848
+icd_categories=p29,0.000195878336570365
+icd_categories=i70,0.00019307899800616196
+icd_categories=a52,0.0001924473486356954
+icd_categories=c67,0.00019196601521043665
+icd_categories=n46,0.00019159437701086907
+icd_categories=k20,0.00019059219807404228
+conditions=leukemia,0.00018958293575269602
+icd_categories=e13,0.00018846872513038378
+conditions=parkinson's disease,0.00018801595140423188
+icd_categories=z13,0.00018655222016094125
+icd_categories=c94,0.00018560722888554616
+conditions=myelodysplastic syndromes,0.00018481677870118744
+icd_categories=z15,0.0001807264657565346
+icd_categories=c77,0.0001804053103874064
+icd_categories=c76,0.0001781641404154446
+conditions=migraine,0.0001778144234177425
+conditions=atopic dermatitis,0.00017619748429870182
+icd_categories=c45,0.00017598417698460656
+icd_categories=d30,0.00017495991756906267
+icd_categories=f84,0.00017486823135396973
+sponsor_class_OTHER_GOV,0.00017443813636185845
+icd_categories=b26,0.00017387014929699763
+conditions=osteoarthritis,0.0001727539658683965
+icd_categories=g20,0.00017265150964732552
+conditions=melanoma,0.00016937581916018723
+icd_categories=c81,0.00016927817542888352
+icd_categories=e08,0.00016866378360549602
+conditions=non-small-cell lung carcinoma,0.00016593234588057224
+icd_categories=k12,0.00016538757213419402
+icd_categories=f10,0.00016405420028658523
+conditions=head and neck cancer,0.0001640224305124165
+icd_categories=c88,0.00016352807627675715
+conditions=prostate cancer,0.00016310879126533908
+conditions=metastatic melanoma,0.00016281034711364416
+conditions=breast neoplasms,0.00016206899653842415
+"conditions=hepatitis c, chronic",0.0001619943325554714
+icd_categories=c47,0.00016198001302080548
+conditions=non small cell lung cancer,0.00016151935725312394
+conditions=major depressive disorder,0.0001615183610604138
+"conditions=carcinoma, hepatocellular",0.0001613660504413078
+icd_categories=c57,0.0001610493448479834
+conditions=asthma,0.0001596330832335102
+icd_categories=d61,0.00015945684724406298
+icd_categories=g35,0.00015909026699394136
+conditions=small cell lung cancer,0.00015780526691006535
+icd_categories=j44,0.00015733541600435893
+"conditions=lymphoma, b-cell",0.00015710506859233908
+conditions=alzheimer disease,0.0001560667020510906
+primary_purpose_SUPPORTIVE_CARE,0.0001557862564661471
+intervention_types=genetic,0.00015473392177846017
+intervention_model_FACTORIAL,0.0001526140130244712
+icd_categories=d17,0.00015207825479920663
+"conditions=arthritis, rheumatoid",0.0001500975309426959
+icd_categories=g60,0.0001478220976450439
+icd_categories=d36,0.0001475594921478708
+icd_categories=l20,0.00014627882797988378
+icd_categories=d40,0.00014471808356239
+icd_categories=o21,0.00014471754922344026
+conditions=endometrial cancer,0.00014442359627223048
+icd_categories=p78,0.00014403696068311794
+icd_categories=l51,0.0001417874315926423
+icd_categories=h46,0.00014113786783009644
+conditions=myelodysplastic syndrome,0.00014110253176771368
+icd_categories=n50,0.00014098783581669444
+icd_categories=z12,0.00014061936567892782
+icd_categories=d41,0.00013974855813588552
+icd_categories=q39,0.00013921798286064795
+icd_categories=n18,0.00013902422973911872
+sponsor_class_infrequent_sklearn,0.0001388595296024653
+icd_categories=d21,0.00013879894930763495
+conditions=glioblastoma multiforme,0.00013818960195799255
+icd_categories=n32,0.00013743921576557934
+icd_categories=d63,0.00013717629476770976
+icd_categories=f90,0.00013689304236361115
+healthy_volunteers_missing,0.00013606013682211467
+icd_categories=b18,0.00013595178673905738
+icd_categories=c96,0.00013570991962628156
+conditions=malignant melanoma,0.00013563949584596832
+icd_categories=c24,0.00013494899008361234
+icd_categories=c61,0.00013346741906094357
+icd_categories=k71,0.0001321733452941401
+conditions=sarcoma,0.00013171716190577505
+icd_categories=h18,0.00013170010250183458
+icd_categories=k75,0.00013152385225849593
+icd_categories=n26,0.00013019271990467564
+icd_categories=d33,0.00012961074294234198
+icd_categories=i85,0.00012937779211580263
+icd_categories=p70,0.00012902007757658717
+icd_categories=d75,0.00012895721630590525
+icd_categories=k58,0.0001285083129466388
+conditions=multiple sclerosis,0.0001269411644231944
+icd_categories=d29,0.00012444771856543724
+icd_categories=g93,0.00012378762571575806
+icd_categories=i10,0.00012081344391963117
+conditions=allergic rhinitis,0.0001203646876071024
+icd_categories=n40,0.00012002137153878092
+icd_categories=i13,0.0001198085763120406
+"conditions=pulmonary disease, chronic obstructive",0.00011958134895223548
+conditions=hiv infection,0.0001189461821810016
+icd_categories=k11,0.00011869710699723486
+icd_categories=n95,0.00011829566108567881
+conditions=bladder cancer,0.00011774649515112702
+icd_categories=i50,0.00011748890851034666
+icd_categories=m15,0.00011748137348052912
+icd_categories=l40,0.00011710466472546333
+intervention_types=behavioral,0.00011670523168394428
+icd_categories=c71,0.00011665548136446688
+icd_categories=i48,0.00011614776470619355
+conditions=non-hodgkin's lymphoma,0.00011567133781391047
+conditions=renal cell carcinoma,0.00011436856365949142
+icd_categories=g40,0.00011404288531775296
+icd_categories=i97,0.00011292083919467311
+conditions=diabetes,0.00011256184731908807
+icd_categories=i12,0.00011089968465649839
+icd_categories=a06,0.00011024633743962491
+conditions=pulmonary hypertension,0.00011000728519701835
+conditions=alzheimer's disease,0.00010988727422684051
+icd_categories=d28,0.00010828398075316526
+icd_categories=f25,0.00010752246631837197
+icd_categories=k51,0.00010738114238780888
+conditions=type 2 diabetes mellitus,0.00010708752079515433
+icd_categories=p91,0.00010703206846730324
+conditions=type 2 diabetes,0.0001066214970772932
+icd_categories=b17,0.00010625595173065898
+primary_purpose_DIAGNOSTIC,0.00010605777630041351
+conditions=esophageal cancer,0.00010455492154015537
+icd_categories=z14,0.00010390637966285055
+icd_categories=m16,0.0001038675941611005
+conditions=amyotrophic lateral sclerosis,0.00010325830261094378
+icd_categories=e66,0.00010319013772732368
+icd_categories=n25,0.00010309425448435291
+icd_categories=a51,0.00010268453356935943
+icd_categories=d89,0.00010241809808373762
+conditions=obesity,0.00010228528160455254
+icd_categories=o88,0.00010097463926945748
+icd_categories=q61,0.0001004597988721111
+intervention_types=dietary_supplement,0.00010027931285195926
+icd_categories=f53,9.848903780181602e-05
+primary_purpose_infrequent_sklearn,9.713490206190389e-05
+conditions=fallopian tube cancer,9.703564923601482e-05
+icd_categories=z83,9.644285659323885e-05
+icd_categories=a36,9.638809946893514e-05
+icd_categories=p09,9.609508788107193e-05
+icd_categories=o99,9.533358889149249e-05
+icd_categories=o24,9.476167674348832e-05
+conditions=follicular lymphoma,9.425575326561743e-05
+conditions=depression,9.32953929290473e-05
+icd_categories=m34,9.327696948055006e-05
+icd_categories=r10,9.327621465610258e-05
+conditions=pain,9.126705767818591e-05
+conditions=chronic myelogenous leukemia,9.023536773996324e-05
+icd_categories=k70,8.996275552406263e-05
+icd_categories=t86,8.995120507352724e-05
+icd_categories=k65,8.867331828997013e-05
+icd_categories=z87,8.78220578259129e-05
+icd_categories=k91,8.742691975889201e-05
+icd_categories=h40,8.723051606365863e-05
+icd_categories=n31,8.631986223522771e-05
+conditions=melanoma (skin),8.601250776514737e-05
+icd_categories=m80,8.356084266474813e-05
+icd_categories=e85,8.325478036196942e-05
+icd_categories=k59,8.24643905801419e-05
+conditions=kidney transplantation,8.196672493041705e-05
+conditions=ulcerative colitis,8.152250408210379e-05
+icd_categories=e89,8.139565121998556e-05
+icd_categories=o28,8.096279901208753e-05
+conditions=psoriasis,8.05268607555007e-05
+icd_categories=z86,8.040638603408208e-05
+icd_categories=e23,8.009707782902305e-05
+conditions=rectal cancer,7.998490414388808e-05
+icd_categories=r07,7.986092829542315e-05
+conditions=liver cancer,7.934727387475732e-05
+icd_categories=d69,7.930840707561754e-05
+icd_categories=n11,7.858552476461952e-05
+icd_categories=m19,7.847297506356853e-05
+icd_categories=j30,7.829544816473604e-05
+icd_categories=d12,7.82499197421777e-05
+icd_categories=a02,7.792124177413577e-05
+icd_categories=n94,7.789998816382604e-05
+icd_categories=c73,7.759400547104433e-05
+conditions=recurrent mantle cell lymphoma,7.661557278582959e-05
+conditions=neoplasms,7.646084068291491e-05
+icd_categories=r11,7.602122986555779e-05
+icd_categories=d47,7.510282644342105e-05
+"conditions=neoplasms, breast",7.507380433056033e-05
+conditions=chronic kidney disease,7.4974720783075e-05
+icd_categories=t45,7.466732619433297e-05
+"conditions=lymphoma, non-hodgkin",7.455410048944782e-05
+icd_categories=m79,7.455015056087037e-05
+"conditions=diabetes mellitus, type 2",7.44700941218773e-05
+icd_categories=r14,7.437530842235973e-05
+conditions=stage iv prostate cancer,7.433613901349614e-05
+icd_categories=c84,7.366822088557197e-05
+icd_categories=n20,7.364631468841722e-05
+icd_categories=m35,7.31329667462701e-05
+icd_categories=i75,7.256635527221857e-05
+conditions=graft versus host disease,7.249479407179657e-05
+icd_categories=b00,7.243275348701702e-05
+icd_categories=d64,7.206700491794927e-05
+conditions=parkinson disease,7.144440121260126e-05
+icd_categories=e70,7.070094507085665e-05
+icd_categories=d23,7.050148885961714e-05
+icd_categories=n23,7.025390817681377e-05
+conditions=acute lymphoblastic leukemia,6.847238837268281e-05
+icd_categories=r52,6.801757496992118e-05
+icd_categories=h04,6.71346183611122e-05
+icd_categories=r75,6.633134383069169e-05
+icd_categories=e84,6.632302430376161e-05
+icd_categories=a54,6.627848719202e-05
+conditions=coronary artery disease,6.582217485412706e-05
+conditions=ovarian neoplasms,6.579983035821398e-05
+conditions=irritable bowel syndrome,6.5578197719905e-05
+icd_categories=d81,6.550747458401886e-05
+conditions=prostatic neoplasms,6.482474722810353e-05
+icd_categories=k76,6.469238180533988e-05
+icd_categories=d68,6.459012728220083e-05
+icd_categories=h44,6.357727002505646e-05
+conditions=non-small-cell lung cancer,6.351625350892122e-05
+conditions=atrial fibrillation,6.344305324563613e-05
+icd_categories=h01,6.333557832437221e-05
+conditions=diabetes mellitus type 2,6.28451571933116e-05
+icd_categories=k66,6.23563483944405e-05
+icd_categories=a50,6.219116313821317e-05
+conditions=ocular hypertension,6.182053996379964e-05
+icd_categories=i42,6.167811572194501e-05
+icd_categories=r88,6.162431324064762e-05
+icd_categories=p61,6.073473506789107e-05
+icd_categories=g03,5.9547886950782016e-05
+conditions=multiple myeloma and plasma cell neoplasm,5.7804372551996046e-05
+icd_categories=n96,5.77945067364015e-05
+conditions=chronic obstructive pulmonary disease,5.749384524282365e-05
+icd_categories=d53,5.7329183241253056e-05
+conditions=diabetes mellitus,5.729014065653504e-05
+icd_categories=k31,5.62569757915904e-05
+icd_categories=i09,5.559080447322213e-05
+icd_categories=n19,5.517789182016644e-05
+icd_categories=q60,5.493978260457259e-05
+conditions=peritoneal cancer,5.4259763469815475e-05
+conditions=anemia,5.370041457041277e-05
+icd_categories=e26,5.3228944983896946e-05
+icd_categories=k52,5.2940693499490945e-05
+icd_categories=a87,5.2344167525089774e-05
+icd_categories=e78,5.233237209422928e-05
+icd_categories=q63,5.1917667649004006e-05
+icd_categories=z82,5.1850442341084836e-05
+conditions=recurrent non-small cell lung cancer,5.168731273220073e-05
+icd_categories=f51,5.1587618325009276e-05
+conditions=adult gliosarcoma,5.156608326718625e-05
+icd_categories=z49,5.1272102693789805e-05
+conditions=stage iiib breast cancer,5.054199543620999e-05
+icd_categories=n42,5.0436028331683424e-05
+"conditions=depressive disorder, major",5.0206977922589824e-05
+icd_categories=d57,4.994428919214439e-05
+icd_categories=d72,4.9929076329510864e-05
+icd_categories=c18,4.9919037354470355e-05
+icd_categories=b58,4.951411752708551e-05
+icd_categories=i15,4.893567381645156e-05
+icd_categories=z71,4.776234087079224e-05
+icd_categories=h05,4.70006794883752e-05
+icd_categories=j01,4.6644850411036014e-05
+conditions=cystic fibrosis,4.598706470542479e-05
+conditions=sickle cell disease,4.508982380477959e-05
+icd_categories=b19,4.397733060764788e-05
+conditions=hepatitis c,4.253578881637744e-05
+conditions=colon cancer,4.221106573618143e-05
+icd_categories=b15,4.164640481658171e-05
+icd_categories=n73,4.086533759092316e-05
+conditions=heart failure,4.0643291757836386e-05
+conditions=chronic hepatitis c,4.030280768736153e-05
+conditions=chronic obstructive pulmonary disease (copd),4.022969010106976e-05
+conditions=metastatic cancer,3.9694294210167225e-05
+icd_categories=b20,3.93213258856444e-05
+icd_categories=g91,3.8434555209978244e-05
+icd_categories=c83,3.8161692153593645e-05
+conditions=hypertension,3.8086218001093876e-05
+conditions=acute myelogenous leukemia,3.711792326095399e-05
+icd_categories=b38,3.666681711212435e-05
+conditions=adult glioblastoma,3.663486151848772e-05
+conditions=recurrent grade 1 follicular lymphoma,3.6260501657689146e-05
+conditions=recurrent grade 2 follicular lymphoma,3.513120895527312e-05
+icd_categories=p96,3.4410312615548456e-05
+icd_categories=h10,3.439251556583776e-05
+icd_categories=z92,3.2819028985911916e-05
+icd_categories=b25,3.270137921106963e-05
+conditions=kidney cancer,3.2549239137275475e-05
+conditions=psoriasis vulgaris,3.122970828644516e-05
+conditions=stage iv breast cancer,3.062891995103988e-05
+icd_categories=j05,3.0233931736475798e-05
+conditions=glaucoma,2.969212780714155e-05
+conditions=recurrent adult diffuse large cell lymphoma,2.9259264184982107e-05
+icd_categories=z11,2.8791109123698666e-05
+icd_categories=i11,2.8716966570302083e-05
+icd_categories=m81,2.8595706843155984e-05
+icd_categories=e24,2.7551348781619194e-05
+icd_categories=b73,2.6851652429524513e-05
+conditions=hypercholesterolemia,2.644132101262064e-05
+icd_categories=r06,2.5935693571031433e-05
+icd_categories=n13,2.574261478128391e-05
+conditions=colorectal neoplasms,2.3937756454921504e-05
+icd_categories=n91,2.3906763746762158e-05
+icd_categories=r19,2.3595907551960273e-05
+icd_categories=q15,2.2640075036945282e-05
+icd_categories=c14,2.1107611979435203e-05
+icd_categories=o98,2.1038364287938456e-05
+icd_categories=c93,1.951836823153029e-05
+sex_infrequent_sklearn,1.9096183582895093e-05
+icd_categories=c30,1.8181579477373852e-05
+phases=phase2,1.5016709802134734e-05
+icd_categories=h02,1.3221679830785107e-05
+conditions=adult giant cell glioblastoma,1.1176311693192967e-05
+conditions=stage iv pancreatic cancer,1.0999661046270693e-05
+conditions=recurrent melanoma,7.723950838372012e-06
+conditions=recurrent prostate cancer,6.597854372267842e-06
+conditions=stage iv melanoma,5.323698922857346e-06
+conditions=primary peritoneal cavity cancer,2.794628317952717e-06
+conditions=recurrent breast cancer,2.4310871345388866e-06
+study_type_INTERVENTIONAL,0.0
+intervention_types=drug,0.0
