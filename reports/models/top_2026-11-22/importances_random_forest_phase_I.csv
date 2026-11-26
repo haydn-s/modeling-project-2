@@ -1,0 +1,81 @@
+feature,importance
+sponsor_class_INDUSTRY,0.43193771995153385
+sponsor_class_OTHER,0.179926563068953
+arm_count,0.06009397922841685
+maximum_age_years,0.03502435397724465
+allocation_NON_RANDOMIZED,0.03085778130724578
+missingindicator_arm_count,0.030146955826260684
+intervention_types=radiation,0.02687607323626371
+phases=phase2,0.02390306706056891
+minimum_age_years,0.01833858687893034
+sponsor_class_NIH,0.017923940688946243
+masking_NONE,0.017232690381313528
+missingindicator_maximum_age_years,0.017011144823958657
+intervention_model_SINGLE_GROUP,0.015256674065575026
+allocation_NA,0.013739437440470821
+allocation_RANDOMIZED,0.01311095147764666
+intervention_model_PARALLEL,0.012972213500371716
+intervention_types=procedure,0.008265645954321357
+masking_DOUBLE,0.007301031723031047
+missingindicator_minimum_age_years,0.005519437441572251
+sex_ALL,0.0046915450015371785
+intervention_types=biological,0.004389472411496946
+sex_FEMALE,0.0035856773086459437
+intervention_types=other,0.003448818003462643
+masking_QUADRUPLE,0.003080078649777047
+healthy_volunteers_True,0.00287431922894303
+conditions=healthy,0.0027650398838644464
+healthy_volunteers_False,0.0025395990112750816
+primary_purpose_TREATMENT,0.0020322583882508446
+sex_MALE,0.0015692593298902583
+intervention_model_CROSSOVER,0.001520634569962175
+conditions=breast cancer,0.0007777621879146957
+masking_TRIPLE,0.00036401123200095395
+conditions=leukemia,0.00029793233846052815
+conditions=neoplasms,0.00028273101476412925
+intervention_model_missing,0.00011170944742871324
+primary_purpose_BASIC_SCIENCE,0.00010595855488973406
+conditions=cancer,9.788346897660954e-05
+"conditions=diabetes mellitus, type 2",2.7061935833895095e-05
+study_type_INTERVENTIONAL,0.0
+allocation_missing,0.0
+intervention_model_SEQUENTIAL,0.0
+intervention_model_infrequent_sklearn,0.0
+primary_purpose_OTHER,0.0
+primary_purpose_PREVENTION,0.0
+primary_purpose_missing,0.0
+primary_purpose_infrequent_sklearn,0.0
+masking_SINGLE,0.0
+masking_missing,0.0
+sponsor_class_NETWORK,0.0
+sponsor_class_infrequent_sklearn,0.0
+healthy_volunteers_infrequent_sklearn,0.0
+phases=early_phase1,0.0
+phases=phase1,0.0
+conditions=acute myeloid leukemia,0.0
+conditions=advanced cancer,0.0
+conditions=advanced solid tumors,0.0
+conditions=asthma,0.0
+conditions=chronic lymphocytic leukemia,0.0
+conditions=colon cancer,0.0
+conditions=colorectal cancer,0.0
+conditions=fallopian tube cancer,0.0
+conditions=head and neck cancer,0.0
+conditions=hiv infections,0.0
+conditions=lung cancer,0.0
+conditions=lymphoma,0.0
+conditions=melanoma,0.0
+conditions=metastatic breast cancer,0.0
+conditions=multiple myeloma,0.0
+conditions=myelodysplastic syndromes,0.0
+conditions=non small cell lung cancer,0.0
+conditions=non-small cell lung cancer,0.0
+conditions=ovarian cancer,0.0
+conditions=pancreatic cancer,0.0
+conditions=prostate cancer,0.0
+conditions=rheumatoid arthritis,0.0
+conditions=tumors,0.0
+conditions=type 2 diabetes mellitus,0.0
+"conditions=unspecified adult solid tumor, protocol specific",0.0
+intervention_types=drug,0.0
+intervention_types=genetic,0.0

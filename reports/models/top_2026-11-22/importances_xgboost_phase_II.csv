@@ -1,0 +1,185 @@
+feature,importance
+sponsor_class_INDUSTRY,0.19201840210824891
+sponsor_class_NIH,0.07969213791996434
+arm_count,0.04010013377475252
+sponsor_class_OTHER,0.0327041170269699
+missingindicator_arm_count,0.029802376467306043
+missingindicator_maximum_age_years,0.02794174844255559
+intervention_model_missing,0.018785120270417743
+intervention_types=other,0.01872981646971872
+masking_NONE,0.016439403538111245
+sponsor_class_NETWORK,0.016042619117495327
+conditions=lung cancer,0.014948176254546017
+allocation_missing,0.014890640073491404
+intervention_model_PARALLEL,0.01412223184456102
+minimum_age_years,0.01392699029872655
+phases=phase1,0.013848241382019358
+conditions=multiple myeloma,0.013571686988264121
+intervention_types=procedure,0.013242153375106296
+intervention_model_SINGLE_GROUP,0.012562190994156525
+allocation_RANDOMIZED,0.012361391314837636
+allocation_NON_RANDOMIZED,0.012342471495511905
+allocation_NA,0.012068530393069885
+conditions=breast neoplasms,0.011161670809929178
+intervention_types=radiation,0.01091877721016311
+conditions=alzheimer's disease,0.010558244523106343
+intervention_model_CROSSOVER,0.010352230368355272
+masking_DOUBLE,0.010262428514618406
+conditions=asthma,0.00982169497886681
+conditions=non-small cell lung cancer,0.009815335907916473
+masking_missing,0.009733157861267987
+conditions=acute myeloid leukemia,0.009718242729271845
+conditions=rheumatoid arthritis,0.00956304619408802
+healthy_volunteers_True,0.009088940574364041
+intervention_types=biological,0.009054714467535556
+conditions=schizophrenia,0.008703809793877233
+conditions=melanoma,0.008346205185184242
+"conditions=arthritis, rheumatoid",0.008321133048533094
+"conditions=diabetes mellitus, type 2",0.008314734862032096
+maximum_age_years,0.008178161054253506
+conditions=psoriasis,0.00815027073530949
+primary_purpose_PREVENTION,0.007901154037697764
+conditions=leukemia,0.007850314066387283
+conditions=colorectal cancer,0.007815632542790387
+sex_FEMALE,0.007719794787057455
+conditions=type 2 diabetes mellitus,0.007597757528623965
+masking_QUADRUPLE,0.0075713452187013575
+missingindicator_minimum_age_years,0.007414606413234323
+"conditions=carcinoma, non-small-cell lung",0.00741008204787452
+masking_SINGLE,0.006907615325614636
+masking_TRIPLE,0.006853406294672807
+conditions=hiv infections,0.006825932276946541
+conditions=metastatic breast cancer,0.00661110781007037
+healthy_volunteers_False,0.006124244932895054
+conditions=ovarian cancer,0.006091431176842225
+conditions=cancer,0.00602853616534704
+phases=phase3,0.005763551592683784
+conditions=non small cell lung cancer,0.00571318240496519
+conditions=major depressive disorder,0.005496506468691059
+conditions=lymphoma,0.005479730088409292
+sex_ALL,0.0052221611722255415
+primary_purpose_TREATMENT,0.005150773895285035
+conditions=breast cancer,0.005014853875996068
+conditions=prostate cancer,0.00465698570299743
+conditions=gastric cancer,0.004613471981193515
+sex_MALE,0.004586541855885965
+conditions=pancreatic cancer,0.004420708684890219
+conditions=non-hodgkin's lymphoma,0.004409443406299815
+primary_purpose_missing,0.0043812946453246435
+conditions=head and neck cancer,0.004098980952395874
+conditions=small cell lung cancer,0.0039229367600323055
+conditions=metastatic colorectal cancer,0.003912384874580149
+conditions=esophageal cancer,0.0035945347038757475
+primary_purpose_SUPPORTIVE_CARE,0.003478894700620621
+conditions=bladder cancer,0.0030683180902754585
+"conditions=pulmonary disease, chronic obstructive",0.002881357865309531
+conditions=myelodysplastic syndrome,0.0027136320138892354
+conditions=glioblastoma multiforme,0.002674393295809659
+conditions=parkinson's disease,0.0026629014729883426
+conditions=multiple sclerosis,0.002177291224756817
+conditions=fallopian tube cancer,0.001844448971523575
+conditions=myelodysplastic syndromes,0.001134380305835636
+study_type_INTERVENTIONAL,0.0
+intervention_model_FACTORIAL,0.0
+intervention_model_SEQUENTIAL,0.0
+primary_purpose_BASIC_SCIENCE,0.0
+primary_purpose_DIAGNOSTIC,0.0
+primary_purpose_infrequent_sklearn,0.0
+sponsor_class_OTHER_GOV,0.0
+sponsor_class_infrequent_sklearn,0.0
+sex_infrequent_sklearn,0.0
+healthy_volunteers_missing,0.0
+phases=phase2,0.0
+conditions=acute lymphoblastic leukemia,0.0
+conditions=acute myelogenous leukemia,0.0
+conditions=adult giant cell glioblastoma,0.0
+conditions=adult glioblastoma,0.0
+conditions=adult gliosarcoma,0.0
+conditions=allergic rhinitis,0.0
+conditions=alzheimer disease,0.0
+conditions=amyotrophic lateral sclerosis,0.0
+conditions=anemia,0.0
+conditions=atopic dermatitis,0.0
+conditions=atrial fibrillation,0.0
+"conditions=carcinoma, hepatocellular",0.0
+"conditions=carcinoma, renal cell",0.0
+conditions=chronic hepatitis c,0.0
+conditions=chronic kidney disease,0.0
+conditions=chronic lymphocytic leukemia,0.0
+conditions=chronic myelogenous leukemia,0.0
+conditions=chronic obstructive pulmonary disease,0.0
+conditions=chronic obstructive pulmonary disease (copd),0.0
+conditions=colon cancer,0.0
+conditions=colorectal neoplasms,0.0
+conditions=coronary artery disease,0.0
+conditions=crohn's disease,0.0
+conditions=cystic fibrosis,0.0
+conditions=depression,0.0
+"conditions=depressive disorder, major",0.0
+conditions=diabetes,0.0
+conditions=diabetes mellitus,0.0
+conditions=diabetes mellitus type 2,0.0
+conditions=endometrial cancer,0.0
+conditions=follicular lymphoma,0.0
+conditions=glaucoma,0.0
+conditions=graft versus host disease,0.0
+conditions=heart failure,0.0
+conditions=hepatitis c,0.0
+"conditions=hepatitis c, chronic",0.0
+conditions=hepatocellular carcinoma,0.0
+conditions=hiv infection,0.0
+conditions=hypercholesterolemia,0.0
+conditions=hypertension,0.0
+conditions=irritable bowel syndrome,0.0
+conditions=kidney cancer,0.0
+conditions=kidney transplantation,0.0
+conditions=liver cancer,0.0
+"conditions=lymphoma, b-cell",0.0
+"conditions=lymphoma, non-hodgkin",0.0
+conditions=malignant melanoma,0.0
+conditions=melanoma (skin),0.0
+conditions=metastatic cancer,0.0
+conditions=metastatic melanoma,0.0
+conditions=migraine,0.0
+conditions=multiple myeloma and plasma cell neoplasm,0.0
+conditions=neoplasm metastasis,0.0
+conditions=neoplasms,0.0
+"conditions=neoplasms, breast",0.0
+conditions=non-small-cell lung cancer,0.0
+conditions=non-small-cell lung carcinoma,0.0
+conditions=obesity,0.0
+conditions=ocular hypertension,0.0
+conditions=osteoarthritis,0.0
+conditions=ovarian neoplasms,0.0
+conditions=pain,0.0
+conditions=parkinson disease,0.0
+conditions=peritoneal cancer,0.0
+conditions=primary peritoneal cavity cancer,0.0
+conditions=prostatic neoplasms,0.0
+conditions=psoriasis vulgaris,0.0
+conditions=pulmonary hypertension,0.0
+conditions=rectal cancer,0.0
+conditions=recurrent adult diffuse large cell lymphoma,0.0
+conditions=recurrent breast cancer,0.0
+conditions=recurrent grade 1 follicular lymphoma,0.0
+conditions=recurrent grade 2 follicular lymphoma,0.0
+conditions=recurrent mantle cell lymphoma,0.0
+conditions=recurrent melanoma,0.0
+conditions=recurrent non-small cell lung cancer,0.0
+conditions=recurrent prostate cancer,0.0
+conditions=renal cell carcinoma,0.0
+conditions=sarcoma,0.0
+conditions=sickle cell disease,0.0
+conditions=stage iiib breast cancer,0.0
+conditions=stage iv breast cancer,0.0
+conditions=stage iv melanoma,0.0
+conditions=stage iv pancreatic cancer,0.0
+conditions=stage iv prostate cancer,0.0
+conditions=stomach neoplasms,0.0
+conditions=type 2 diabetes,0.0
+conditions=ulcerative colitis,0.0
+intervention_types=behavioral,0.0
+intervention_types=device,0.0
+intervention_types=dietary_supplement,0.0
+intervention_types=drug,0.0
+intervention_types=genetic,0.0
