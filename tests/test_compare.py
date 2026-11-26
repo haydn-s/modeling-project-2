@@ -96,3 +96,34 @@ def test_main_rejects_bad_arguments(top_phase, bad):
     dataset_root, _ = top_phase
     with pytest.raises(SystemExit):
         main(["--dataset-root", str(dataset_root), *bad])
+
+
+def test_main_uses_top_columns_when_the_dataset_has_them(tmp_path, top_labeled_features):
+    dataset_root, labels_dir = tmp_path / "top", tmp_path / "labels"
+    (dataset_root / "phase_I").mkdir(parents=True)
+    labels_dir.mkdir()
+    top_labeled_features.to_parquet(dataset_root / "phase_I" / "dataset.parquet")
+    split = ["train"] * 200 + ["valid"] * 50 + ["test"] * 50
+    pd.DataFrame(
+        {
+            "nct_id": top_labeled_features.index,
+            "label": top_labeled_features["label"],
+            "split": split,
+        }
+    ).to_csv(labels_dir / "phase_I.csv", index=False)
+    output_dir = tmp_path / "report"
+
+    main(
+        [
+            *("--dataset-root", str(dataset_root), "--labels-dir", str(labels_dir)),
+            *("--output-dir", str(output_dir), "--models-dir", str(tmp_path / "models")),
+            *("--phases", "I", "--min-count", "5", "--bootstrap", "20", "--tuning", "valid"),
+            *("--c-grid", "1", "--chain-lengths", "5"),
+            *("--xgboost-candidates", "1", "--forest-candidates", "1"),
+        ]
+    )
+
+    features = set(pd.read_csv(output_dir / "logit_coefficients_phase_I.csv")["feature"])
+    assert {"icd_chapters=neoplasms", "icd_categories=c50", "criteria_text_0"} <= features
+    importances = pd.read_csv(output_dir / "importances_xgboost_phase_I.csv")
+    assert importances["feature"].str.startswith("criteria_text_").any()

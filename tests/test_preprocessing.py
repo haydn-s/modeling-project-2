@@ -2,12 +2,16 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from trial_outcome.data.top import TOP_FEATURE_DTYPES
 from trial_outcome.features import FEATURE_DTYPES
 from trial_outcome.preprocessing import (
     CATEGORICAL_FEATURES,
     MULTI_VALUED_FEATURES,
     NUMERIC_FEATURES,
+    TEXT_FEATURES,
+    TOP_MULTI_VALUED_FEATURES,
     MultiValueBinarizer,
+    TextComponents,
     make_preprocessor,
 )
 
@@ -16,6 +20,7 @@ def test_feature_groups_cover_the_feature_table_once():
     groups = CATEGORICAL_FEATURES + MULTI_VALUED_FEATURES + NUMERIC_FEATURES
 
     assert sorted(groups) == sorted(FEATURE_DTYPES)
+    assert sorted(TOP_MULTI_VALUED_FEATURES + TEXT_FEATURES) == sorted(TOP_FEATURE_DTYPES)
 
 
 def test_binarizer_vocabulary_comes_from_fit_rows_only():
@@ -80,3 +85,74 @@ def test_preprocessor_groups_rare_and_unseen_categories(labeled_features):
     assert "primary_purpose_infrequent_sklearn" in names  # SCREENING is in ~1/3 of rows
     assert row["sponsor_class_infrequent_sklearn"] == 1.0
     assert not [name for name in names if name.startswith("conditions=")]
+
+
+def test_preprocessor_adds_top_columns_only_when_present(labeled_features, top_labeled_features):
+    registry = make_preprocessor(min_count=5).fit(labeled_features.drop(columns="label"))
+    with_top = make_preprocessor(min_count=5, text_components=4).fit(
+        top_labeled_features.drop(columns="label").iloc[:200]
+    )
+    registry_names = registry.get_feature_names_out().tolist()
+    names = with_top.get_feature_names_out().tolist()
+
+    assert names[: len(registry_names)] == registry_names
+    assert names[len(registry_names) :] == [
+        "icd_chapters=blood_immune",
+        "icd_chapters=neoplasms",
+        "icd_chapters=respiratory",
+        "icd_categories=c50",
+        "icd_categories=d63",
+        "icd_categories=j45",
+        *(f"criteria_text_{i}" for i in range(4)),
+    ]
+    matrix = with_top.transform(top_labeled_features.drop(columns="label").iloc[200:])
+    assert matrix.shape == (100, len(names))
+    assert np.isfinite(matrix).all()
+
+
+def test_preprocessor_fitted_with_top_columns_requires_them(top_labeled_features):
+    X = top_labeled_features.drop(columns="label")
+    preprocessor = make_preprocessor(min_count=5, text_components=4).fit(X)
+
+    with pytest.raises(ValueError, match="missing"):
+        preprocessor.transform(X.drop(columns="criteria"))
+
+
+def test_text_components_vocabulary_comes_from_fit_rows_only():
+    train = pd.DataFrame({"criteria": ["adults with asthma", "adults who smoke", pd.NA] * 4})
+    later = pd.DataFrame({"criteria": ["children with lupus", pd.NA]})
+
+    text = TextComponents(n_components=2, min_df=2).fit(train)
+
+    # Stop words ("with", "who") are dropped; two-word phrases are kept.
+    assert sorted(text.vectorizer_.vocabulary_) == [
+        "adults",
+        "adults asthma",
+        "adults smoke",
+        "asthma",
+        "smoke",
+    ]
+    assert text.get_feature_names_out().tolist() == ["criteria_text_0", "criteria_text_1"]
+    # Unseen words carry no information: the same row as missing text.
+    np.testing.assert_allclose(*text.transform(later))
+
+
+def test_text_components_are_capped_by_the_vocabulary():
+    # "adults" is in every row, above the 90% limit, so 4 terms remain: 3 components at most.
+    train = pd.DataFrame({"criteria": ["adults with asthma", "adults who smoke"] * 2})
+
+    text = TextComponents(n_components=50, min_df=2).fit(train)
+
+    assert len(text.vectorizer_.vocabulary_) == 4
+    assert text.transform(train).shape == (4, 3)
+    with pytest.raises(ValueError, match="too small"):
+        TextComponents(min_df=2).fit(pd.DataFrame({"criteria": ["asthma"] * 4}))
+
+
+def test_text_components_reject_other_columns():
+    text = TextComponents(n_components=1, min_df=1).fit(
+        pd.DataFrame({"criteria": ["adults asthma", "asthma smokers"]})
+    )
+
+    with pytest.raises(ValueError, match="columns"):
+        text.transform(pd.DataFrame({"notes": ["a b"]}))

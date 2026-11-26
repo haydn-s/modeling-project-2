@@ -34,10 +34,10 @@ Team 9: Haydn Stucker, Sabrina Grewal
 │   ├── config.py           #   paths and constants
 │   ├── data/ctgov.py        #   ClinicalTrials.gov API v2 client + CLI
 │   ├── data/pipeline.py    #   raw snapshot -> features, audit, optional labeled dataset
-│   ├── data/top.py         #   TOP benchmark labels -> per-phase labeled datasets
+│   ├── data/top.py         #   TOP labels, ICD codes, criteria text -> per-phase datasets
 │   ├── labeling.py         #   load/validate external labels (1 = success, 0 = failure)
-│   ├── features.py         #   study records -> feature table
-│   ├── preprocessing.py    #   feature table -> model matrix (encoding, imputation, scaling)
+│   ├── features.py         #   study records -> feature table; ICD-10 chapters
+│   ├── preprocessing.py    #   feature table -> model matrix (encoding, imputation, text)
 │   ├── modeling.py         #   logit, XGBoost, and random forest pipelines, persistence
 │   ├── baseline.py         #   logit vs. XGBoost chain-length comparison + CLI
 │   ├── tuning.py           #   cross-validated tuning: logit, XGBoost, random forest
@@ -47,7 +47,7 @@ Team 9: Haydn Stucker, Sabrina Grewal
 └── tests/                  # pytest suite (also runs the docstring examples in src/)
 ```
 
-The data pipeline extracts an initial set of design and eligibility features and joins them to an explicitly labeled dataset. Labels and the train/test split come from the TOP benchmark (see [Building the TOP labeled datasets](#building-the-top-labeled-datasets)). The baseline models are an L2-regularized logistic regression and XGBoost (see [Baseline models](#baseline-models)). The final comparison tunes three models (logit, XGBoost, and random forest) and tests them (see [Tuned model comparison](#tuned-model-comparison)).
+The data pipeline extracts design and eligibility features from each trial's registry record, adds TOP's ICD-10 disease codes and eligibility criteria text, and joins them to an explicitly labeled dataset. Labels and the train/test split come from the TOP benchmark (see [Building the TOP labeled datasets](#building-the-top-labeled-datasets)). The baseline models are an L2-regularized logistic regression and XGBoost (see [Baseline models](#baseline-models)). The final comparison tunes three models (logit, XGBoost, and random forest) and tests them (see [Tuned model comparison](#tuned-model-comparison)).
 
 ### Getting data from ClinicalTrials.gov
 
@@ -107,17 +107,17 @@ make top-data
 
 It runs three steps, each of which can also be run alone:
 
-1. `python -m trial_outcome.data.top labels`: downloads the nine TOP files at a pinned commit into `data/external/top/`, checks their checksums, and writes `data/interim/top_labels/phase_{I,II,III}.csv` plus `nct_ids.txt`.
+1. `python -m trial_outcome.data.top labels`: downloads the nine TOP files at a pinned commit into `data/external/top/`, checks their checksums, and writes `data/interim/top_labels/phase_{I,II,III}.csv` plus `nct_ids.txt`. It also writes `data/interim/top_features.parquet`, one row per trial with TOP's ICD-10 chapters and categories and its eligibility criteria text.
 2. `python -m trial_outcome.data.ctgov --ids-file data/interim/top_labels/nct_ids.txt --out data/raw/ctgov_top_<date>.jsonl`: downloads the current registry record for each TOP trial, 200 IDs per request (about 60 requests).
-3. `python -m trial_outcome.data.top datasets --raw ... --output-root data/processed/top_<date>`: runs the pipeline once per phase into `phase_I/`, `phase_II/`, and `phase_III/`.
+3. `python -m trial_outcome.data.top datasets --raw ... --output-root data/processed/top_<date>_v2`: runs the pipeline once per phase into `phase_I/`, `phase_II/`, and `phase_III/`, adding the TOP feature table to the registry features. `--registry-only` leaves it out.
 
-`<date>` is `TOP_DATE`, pinned in the `Makefile` to `2026-11-22`, the snapshot recorded in `data/README.md`. Re-running `make top-data` skips steps whose output already exists, so a second run does nothing. For a fresh registry snapshot, run `make top-data TOP_DATE=$(date +%F)` and record it in `data/README.md`. The pipeline never overwrites a build, so to rebuild from the same snapshot, pass `TOP_OUTPUT=data/processed/<new name>`. Each labels file keeps TOP's `split`, `status`, and `why_stop` columns for analysis; the build reads only `nct_id` and `label`, so they never reach `dataset.parquet`. To split a dataset for modeling:
+`<date>` is `TOP_DATE`, pinned in the `Makefile` to `2026-11-22`, the snapshot recorded in `data/README.md`. The current build is `top_2026-11-22_v2`; the first build, `top_2026-11-22`, has the registry features only, and its reports are kept for comparison. Re-running `make top-data` skips steps whose output already exists, so a second run does nothing. For a fresh registry snapshot, run `make top-data TOP_DATE=$(date +%F)` and record it in `data/README.md`. The pipeline never overwrites a build, so to rebuild from the same snapshot, pass `TOP_OUTPUT=data/processed/<new name>`. Each labels file keeps TOP's `split`, `status`, and `why_stop` columns for analysis; the build reads only `nct_id` and `label`, so they never reach `dataset.parquet`. To split a dataset for modeling:
 
 ```python
 import pandas as pd
 from trial_outcome.data.top import load_splits
 
-dataset = pd.read_parquet("data/processed/top_2026-11-22/phase_II/dataset.parquet")
+dataset = pd.read_parquet("data/processed/top_2026-11-22_v2/phase_II/dataset.parquet")
 split = load_splits("data/interim/top_labels/phase_II.csv").reindex(dataset.index)
 train, valid, test = (dataset[split == name] for name in ("train", "valid", "test"))
 ```
@@ -134,7 +134,7 @@ Trials registered as phase 1/2 or 2/3 appear in both phases, always with the sam
 ```bash
 make baseline
 # or, to change the candidates:
-python -m trial_outcome.baseline --dataset-root data/processed/top_2026-11-22 \
+python -m trial_outcome.baseline --dataset-root data/processed/top_2026-11-22_v2 \
   --chain-lengths 10 25 50 100 200 400 800 1600 --learning-rate 0.05 --max-depth 4
 ```
 
@@ -143,8 +143,10 @@ Both models share the preprocessing in `trial_outcome.preprocessing`, so they se
 - Categorical columns are one-hot encoded, with missing values as their own category.
 - Multi-valued columns are split into one 0/1 column per value. A condition, intervention type, or category needs at least `--min-count` training trials (default 10) to get its own column.
 - Numeric columns are median-imputed, given a missing-value indicator, and standardized.
+- TOP's ICD-10 chapters (e.g. neoplasms) and three-character categories (e.g. C50, breast cancer) are multi-valued columns like the conditions.
+- TOP's eligibility criteria text becomes 50 dense columns: TF-IDF weights of its words and two-word phrases (each in at least `--min-count` training trials), reduced by truncated SVD (latent semantic analysis) and standardized.
 
-Every step is fitted on the training split only.
+Every step is fitted on the training split only. The TOP columns are encoded only when the dataset has them, so builds made with `--registry-only` still work. In 5-fold cross-validation over train and valid, adding the ICD codes and the criteria text each lowered log loss in every phase, for both the logit and XGBoost. TOP's drug names and counts of listed criteria did not, so they are not used.
 
 How the models are fitted, selected, and scored:
 
@@ -177,7 +179,7 @@ All three use the same preprocessing as the baseline, and every model is selecte
 ```bash
 make models
 # or, to change the search:
-python -m trial_outcome.compare --dataset-root data/processed/top_2026-11-22 \
+python -m trial_outcome.compare --dataset-root data/processed/top_2026-11-22_v2 \
   --tuning cv --folds 5 --xgboost-candidates 30 --forest-candidates 20
 ```
 

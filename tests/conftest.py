@@ -88,3 +88,33 @@ def labeled_features():
     ).astype(FEATURE_DTYPES)
     frame["label"] = (rng.uniform(size=n) < 1 / (1 + np.exp(-log_odds))).astype(int)
     return frame
+
+
+@pytest.fixture
+def top_labeled_features(labeled_features):
+    """``labeled_features`` plus TOP's ICD and criteria columns, as in a v2 ``dataset.parquet``.
+
+    Successful trials mention "placebo controlled" in their criteria more often.
+    """
+    rng = np.random.default_rng(1)
+    words = np.array(["adults", "asthma", "consent", "pregnant", "smokers", "renal", "hepatic"])
+    criteria = [
+        "Inclusion Criteria: "
+        + " ".join(rng.choice(words, size=6))
+        + (" placebo controlled" if rng.uniform() < (0.7 if label else 0.2) else "")
+        + "\nExclusion Criteria: "
+        + " ".join(rng.choice(words, size=3))
+        for label in labeled_features["label"]
+    ]
+    frame = labeled_features.drop(columns="label")
+    frame["icd_chapters"] = pd.array(
+        rng.choice(["neoplasms", "blood_immune|neoplasms", "respiratory", ""], size=len(frame)),
+        dtype="string",
+    )
+    frame["icd_categories"] = pd.array(
+        rng.choice(["C50", "C50|D63", "J45", ""], size=len(frame)), dtype="string"
+    )
+    frame["criteria"] = pd.array(criteria, dtype="string")
+    frame.iloc[::50, frame.columns.get_loc("criteria")] = pd.NA
+    frame["label"] = labeled_features["label"]
+    return frame

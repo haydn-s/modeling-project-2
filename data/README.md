@@ -58,6 +58,18 @@ Missing lists remain missing; explicitly empty lists become an empty category st
 
 Status, termination reasons, results, registry dates, enrollment (actual or estimated), and narrative descriptions are excluded from the feature allowlist. Status and dates are kept only in the separate audit table. **This is not a guarantee against temporal leakage:** current API records may have been edited after registration, including their design and eligibility fields. Before claiming prospective performance, define a prediction time and obtain appropriate historical snapshots or assess remaining leakage. No completion-status proxy label is provided.
 
+### TOP features
+
+`python -m trial_outcome.data.top labels` also writes `interim/top_features.parquet` (`trial_outcome.data.top.load_top_features`): one row per TOP trial, from TOP's own files rather than the registry. `datasets` joins it to the registry features by `nct_id` unless `--registry-only` is passed; the manifest records it under `inputs.extra_features`.
+
+| Feature | Source | Representation |
+| --- | --- | --- |
+| `icd_chapters` | TOP's `icdcodes` | ICD-10-CM chapters of the codes (e.g. `neoplasms`), sorted unique values joined with `\|`; empty if TOP lists no codes |
+| `icd_categories` | TOP's `icdcodes` | Three-character ICD-10 categories (e.g. `C50`), joined the same way |
+| `criteria` | TOP's `criteria` | Eligibility criteria free text; missing if blank (2 trials) |
+
+TOP mapped each trial's disease names to ICD-10 codes automatically, so a broad name such as "cancer" can bring in many specific codes, and some codes are wrong. The chapters smooth over most of that. The criteria text is TOP's copy of the registry's eligibility criteria; like the registry fields, it may include edits made after the trial started. TOP's drug names and SMILES strings are not used.
+
 Feature values are not imputed, scaled, or encoded here. Decide the split strategy after selecting the cohort and label source, then fit preprocessing only on training data. The initial builder holds the snapshot and feature tables in memory; start with a bounded download before attempting a full-registry build.
 
 ## Provenance
@@ -70,7 +82,9 @@ Keep the exact API query, download command, and retrieval date with each raw sna
 | --- | --- | --- | --- |
 | `raw/ctgov_asthma_smoke_2026-11-07.jsonl` | ClinicalTrials.gov API v2 | 2026-11-07 | `python -m trial_outcome.data.ctgov --param query.cond=asthma --max-studies 100 --out data/raw/ctgov_asthma_smoke_2026-11-07.jsonl`; live validation sample, not a selected modeling cohort |
 | `external/top/phase_{I,II,III}_{train,valid,test}.csv` | [TOP benchmark](https://github.com/futianfan/clinical-trial-outcome-prediction) (Fu et al., 2022), commit `8dc0497` | 2026-11-22 | `python -m trial_outcome.data.top labels`; SHA-256 of each file pinned in `trial_outcome.data.top.TOP_SHA256`. Labels from IQVIA; based on the registry as of 2021-02-20. Non-commercial academic use only |
-| `raw/ctgov_top_2026-11-22.jsonl` | ClinicalTrials.gov API v2 | 2026-11-22 | `make top-data` (step 2): current records for the 11,601 TOP trial IDs. Built into `processed/top_2026-11-22/phase_{I,II,III}/`; each phase's `manifest.json` has its counts, and `unmatched_labels.parquet` lists TOP trials missing from the snapshot (`not_in_raw`) |
+| `raw/ctgov_top_2026-11-22.jsonl` | ClinicalTrials.gov API v2 | 2026-11-22 | `make top-data` (step 2): current records for the 11,601 TOP trial IDs. Built into `processed/top_2026-11-22/phase_{I,II,III}/` (registry features only) and `processed/top_2026-11-22_v2/phase_{I,II,III}/` (plus the TOP features); each phase's `manifest.json` has its counts, and `unmatched_labels.parquet` lists TOP trials missing from the snapshot (`not_in_raw`) |
+
+**The 2026-11-22 snapshot was overwritten on 2026-11-25.** A `make models` run re-downloaded `raw/ctgov_top_2026-11-22.jsonl` because the labels step had rewritten `nct_ids.txt`, making the snapshot look out of date. The Makefile now never re-downloads an existing snapshot, and the labels step leaves unchanged files alone. The file now holds the registry as of 2026-11-25 (SHA-256 `fb4a1dab…`), not the original (`47584e13…`, recorded in every `top_2026-11-22*` manifest). Rebuilding the registry features from it gives identical values for all 11,601 trials: 3 records were updated after 2026-11-22, in fields not used as features. The processed builds are unchanged.
 
 The TOP labels files in `interim/top_labels/` hold one row per trial for each phase: `nct_id`, `label`, `split` (TOP's `train`, `valid`, or `test`), `top_phase` (TOP's phase text, e.g. `phase 1/phase 2`), and TOP's `status` and `why_stop`. `status` and `why_stop` describe how the trial ended, so they are for analysis only and must never be used as features. Our registry records are current, while TOP's labels were curated from the February 2021 registry, so a few trials may have been edited since; the leakage note under [Initial features](#initial-features) applies.
 

@@ -13,10 +13,14 @@ import numpy as np
 import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.compose import ColumnTransformer
+from sklearn.decomposition import TruncatedSVD
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import FunctionTransformer, OneHotEncoder, StandardScaler
 from sklearn.utils.validation import check_is_fitted
+
+from trial_outcome.config import RANDOM_SEED
 
 # Together these cover every column in trial_outcome.features.FEATURE_DTYPES.
 CATEGORICAL_FEATURES = [
@@ -31,10 +35,15 @@ CATEGORICAL_FEATURES = [
 ]
 MULTI_VALUED_FEATURES = ["phases", "conditions", "intervention_types"]
 NUMERIC_FEATURES = ["minimum_age_years", "maximum_age_years", "arm_count"]
+# Optional columns from trial_outcome.data.top.TOP_FEATURE_DTYPES, encoded when present.
+TOP_MULTI_VALUED_FEATURES = ["icd_chapters", "icd_categories"]
+TEXT_FEATURES = ["criteria"]
 
 MISSING = "missing"
 SEPARATOR = "|"
 DEFAULT_MIN_COUNT = 10
+# Chosen by cross-validated log loss over train + valid: 50 beat 20 and matched 100.
+DEFAULT_TEXT_COMPONENTS = 50
 
 
 def normalize_token(token: str) -> str:
@@ -105,16 +114,106 @@ class MultiValueBinarizer(TransformerMixin, BaseEstimator):
         ]
 
 
-def make_preprocessor(min_count: int = DEFAULT_MIN_COUNT) -> ColumnTransformer:
+class TextComponents(TransformerMixin, BaseEstimator):
+    """Dense components of one free-text column: TF-IDF, then truncated SVD, then scaling.
+
+    The TF-IDF vocabulary holds words and two-word phrases (English stop words removed) found in
+    at least ``min_df`` of the fitted rows and in at most 90% of them, capped at the
+    ``max_features`` most frequent. Truncated SVD reduces it to ``n_components`` columns
+    (latent semantic analysis), which are standardized. Missing text counts as empty. The
+    output has at most one column fewer than the vocabulary has terms.
+    """
+
+    def __init__(
+        self,
+        n_components: int = DEFAULT_TEXT_COMPONENTS,
+        min_df: int = DEFAULT_MIN_COUNT,
+        max_features: int = 5000,
+        random_state: int = RANDOM_SEED,
+    ):
+        self.n_components = n_components
+        self.min_df = min_df
+        self.max_features = max_features
+        self.random_state = random_state
+
+    def fit(self, X: pd.DataFrame, y=None) -> TextComponents:
+        text = self._text(X)
+        self.feature_names_in_ = np.asarray(X.columns, dtype=object)
+        self.n_features_in_ = 1
+        self.vectorizer_ = TfidfVectorizer(
+            min_df=self.min_df,
+            max_df=0.9,
+            max_features=self.max_features,
+            ngram_range=(1, 2),
+            stop_words="english",
+            sublinear_tf=True,
+        )
+        try:
+            tfidf = self.vectorizer_.fit_transform(text)
+        except ValueError as error:  # no term passed min_df and max_df
+            raise ValueError(f"the text vocabulary is too small: {error}") from error
+        n_components = min(self.n_components, tfidf.shape[1] - 1)
+        if n_components < 1:
+            raise ValueError(f"the text vocabulary is too small: {tfidf.shape[1]} terms")
+        self.svd_ = TruncatedSVD(n_components, random_state=self.random_state)
+        self.scaler_ = StandardScaler().fit(self.svd_.fit_transform(tfidf))
+        return self
+
+    def transform(self, X: pd.DataFrame) -> np.ndarray:
+        check_is_fitted(self)
+        if not isinstance(X, pd.DataFrame) or list(X.columns) != list(self.feature_names_in_):
+            raise ValueError(f"expected a DataFrame with columns {list(self.feature_names_in_)}")
+        tfidf = self.vectorizer_.transform(self._text(X))
+        return self.scaler_.transform(self.svd_.transform(tfidf))
+
+    def get_feature_names_out(self, input_features=None) -> np.ndarray:
+        check_is_fitted(self)
+        column = self.feature_names_in_[0]
+        return np.asarray(
+            [f"{column}_text_{i}" for i in range(self.svd_.n_components)], dtype=object
+        )
+
+    @staticmethod
+    def _text(X: pd.DataFrame) -> list[str]:
+        if not isinstance(X, pd.DataFrame) or X.shape[1] != 1:
+            raise ValueError("TextComponents expects a DataFrame with one text column")
+        return X.iloc[:, 0].astype("string").fillna("").tolist()
+
+
+class PresentColumns:
+    """Column selector for :class:`~sklearn.compose.ColumnTransformer`: the listed columns that
+    the fitted table has, so optional feature groups are encoded only when they're present.
+
+    >>> PresentColumns(["criteria", "icd_chapters"])(pd.DataFrame(columns=["icd_chapters"]))
+    ['icd_chapters']
+    """
+
+    def __init__(self, columns: list[str]):
+        self.columns = list(columns)
+
+    def __call__(self, X: pd.DataFrame) -> list[str]:
+        return [column for column in self.columns if column in X.columns]
+
+
+def make_preprocessor(
+    min_count: int = DEFAULT_MIN_COUNT, text_components: int = DEFAULT_TEXT_COMPONENTS
+) -> ColumnTransformer:
     """Encode the feature table as a dense float matrix with readable column names.
 
     - Categorical columns: one-hot, with missing values as their own ``missing`` category.
       Categories in fewer than ``min_count`` training rows, and categories first seen after
       fitting, share one ``infrequent`` column.
-    - Multi-valued columns (``phases``, ``conditions``, ``intervention_types``): one 0/1 column
-      per value found in at least ``min_count`` training rows (:class:`MultiValueBinarizer`).
+    - Multi-valued columns (``phases``, ``conditions``, ``intervention_types``, and TOP's
+      ``icd_chapters`` and ``icd_categories``): one 0/1 column per value found in at least
+      ``min_count`` training rows (:class:`MultiValueBinarizer`).
     - Numeric columns: training-median imputation, a missing-value indicator for each column
       with missing training values, then standardization.
+    - TOP's ``criteria`` text: ``text_components`` dense columns (:class:`TextComponents`), from
+      terms found in at least ``min_count`` training rows.
+
+    The registry columns are required. TOP's columns are optional: each is encoded only if the
+    table being fitted has it, so datasets built with ``--registry-only`` still work. Once
+    fitted, the preprocessor expects the same columns.
 
     The output is dense because XGBoost reads the absent entries of a sparse matrix as missing,
     not as zero.
@@ -135,6 +234,16 @@ def make_preprocessor(min_count: int = DEFAULT_MIN_COUNT) -> ColumnTransformer:
             ("categorical", categorical, CATEGORICAL_FEATURES),
             ("multi_valued", MultiValueBinarizer(min_count=min_count), MULTI_VALUED_FEATURES),
             ("numeric", numeric, NUMERIC_FEATURES),
+            (
+                "top_multi_valued",
+                MultiValueBinarizer(min_count=min_count),
+                PresentColumns(TOP_MULTI_VALUED_FEATURES),
+            ),
+            (
+                "text",
+                TextComponents(n_components=text_components, min_df=min_count),
+                PresentColumns(TEXT_FEATURES),
+            ),
         ],
         sparse_threshold=0.0,
         verbose_feature_names_out=False,
