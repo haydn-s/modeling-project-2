@@ -13,6 +13,7 @@ from typing import Any
 import joblib
 import numpy as np
 import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 from xgboost import XGBClassifier
@@ -32,6 +33,13 @@ XGBOOST_DEFAULTS = {
     "subsample": 0.8,
     "colsample_bytree": 0.8,
     "reg_lambda": 1.0,
+}
+
+RANDOM_FOREST_DEFAULTS = {
+    "n_estimators": 500,
+    "max_features": "sqrt",
+    "min_samples_leaf": 5,
+    "max_depth": None,
 }
 
 
@@ -69,6 +77,42 @@ def make_xgboost(
         **(XGBOOST_DEFAULTS | params),
     )
     return Pipeline([("preprocess", make_preprocessor(min_count)), ("model", model)])
+
+
+def make_random_forest(
+    min_count: int = DEFAULT_MIN_COUNT,
+    random_state: int = RANDOM_SEED,
+    n_jobs: int = -1,
+    **params: Any,
+) -> Pipeline:
+    """Random forest of fully grown or leaf-size-limited trees, averaged into a probability.
+
+    ``params`` override :data:`RANDOM_FOREST_DEFAULTS` or set other ``RandomForestClassifier``
+    options. Larger ``min_samples_leaf`` gives smoother, less extreme probabilities, which
+    matters when models are selected and scored by log loss. Classes are not reweighted, so the
+    probabilities stay on the training success rate, as for the logit.
+    """
+    model = RandomForestClassifier(
+        random_state=random_state, n_jobs=n_jobs, **(RANDOM_FOREST_DEFAULTS | params)
+    )
+    return Pipeline([("preprocess", make_preprocessor(min_count)), ("model", model)])
+
+
+def feature_importances(model: Pipeline) -> pd.DataFrame:
+    """Impurity (random forest) or gain (XGBoost) importances of a fitted tree pipeline.
+
+    Importances are normalized to sum to 1 and sorted largest first. They show what the trees
+    split on, not the direction of an effect; use the logit's coefficients for direction.
+    """
+    names = model[:-1].get_feature_names_out()
+    importances = pd.DataFrame(
+        {"feature": names, "importance": model[-1].feature_importances_.astype(float)}
+    )
+    total = importances["importance"].sum()
+    if total > 0:
+        importances["importance"] /= total
+    order = importances["importance"].sort_values(ascending=False, kind="stable").index
+    return importances.loc[order].reset_index(drop=True)
 
 
 def predict_success(model: Pipeline, X: pd.DataFrame, n_trees: int | None = None) -> np.ndarray:

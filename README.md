@@ -29,6 +29,7 @@ Team 9: Haydn Stucker, Sabrina Grewal
 ├── notebooks/              # exploration; see notebooks/README.md for naming
 ├── reports/figures/        # figures for the presentation
 ├── reports/baseline/       # baseline model comparison outputs (make baseline)
+├── reports/models/         # tuned three-model comparison outputs (make models)
 ├── src/trial_outcome/      # importable project package
 │   ├── config.py           #   paths and constants
 │   ├── data/ctgov.py        #   ClinicalTrials.gov API v2 client + CLI
@@ -37,14 +38,16 @@ Team 9: Haydn Stucker, Sabrina Grewal
 │   ├── labeling.py         #   load/validate external labels (1 = success, 0 = failure)
 │   ├── features.py         #   study records -> feature table
 │   ├── preprocessing.py    #   feature table -> model matrix (encoding, imputation, scaling)
-│   ├── modeling.py         #   regularized logit and XGBoost pipelines, persistence
+│   ├── modeling.py         #   logit, XGBoost, and random forest pipelines, persistence
 │   ├── baseline.py         #   logit vs. XGBoost chain-length comparison + CLI
+│   ├── tuning.py           #   cross-validated tuning: logit, XGBoost, random forest
+│   ├── compare.py          #   tuned three-model comparison on the test sets + CLI
 │   ├── evaluation.py       #   ROC AUC, PR AUC, Brier, log loss, thresholded metrics
 │   └── visualization.py    #   ROC / PR / calibration and chain-length plots, figure saving
 └── tests/                  # pytest suite (also runs the docstring examples in src/)
 ```
 
-The data pipeline extracts an initial set of design and eligibility features and joins them to an explicitly labeled dataset. Labels and the train/test split come from the TOP benchmark (see [Building the TOP labeled datasets](#building-the-top-labeled-datasets)). The baseline models are an L2-regularized logistic regression and XGBoost (see [Baseline models](#baseline-models)).
+The data pipeline extracts an initial set of design and eligibility features and joins them to an explicitly labeled dataset. Labels and the train/test split come from the TOP benchmark (see [Building the TOP labeled datasets](#building-the-top-labeled-datasets)). The baseline models are an L2-regularized logistic regression and XGBoost (see [Baseline models](#baseline-models)). The final comparison tunes three models (logit, XGBoost, and random forest) and tests them (see [Tuned model comparison](#tuned-model-comparison)).
 
 ### Getting data from ClinicalTrials.gov
 
@@ -161,6 +164,38 @@ Outputs go to `reports/baseline/<build name>/`:
 
 The selected models are saved to `models/baseline_{logit,xgboost}_phase_<P>.joblib`.
 
+### Tuned model comparison
+
+`make models` tunes three models on each phase and compares them on TOP's test split:
+
+- **Regularized logit:** the baseline's logit, with `C` tuned.
+- **XGBoost:** a random search over depth, learning rate, subsampling, and regularization (30 settings by default, starting with the baseline's), each at every chain length.
+- **Random forest:** a random search over features per split, leaf size, and depth (20 settings by default, starting with 500 trees, `sqrt` features, leaf size 5).
+
+All three use the same preprocessing as the baseline, and every model is selected by log loss.
+
+```bash
+make models
+# or, to change the search:
+python -m trial_outcome.compare --dataset-root data/processed/top_2026-11-22 \
+  --tuning cv --folds 5 --xgboost-candidates 30 --forest-candidates 20
+```
+
+**Tuning never sees the test split.** By default (`--tuning cv`), each model is tuned with stratified 5-fold cross-validation over TOP's train and valid splits together, then refitted on both. TOP's train and valid splits are a random 90/10 split of the same pre-2014 trials, so pooling them is sound. Selecting among many settings on the valid split alone (117 trials in phase I) tends to fit its noise and overstate the winner. `--tuning valid` tunes on the valid split instead and refits on train, like `make baseline`.
+
+**Testing:** each selected model is scored once on the test split. Test scores come with 95% paired bootstrap intervals (2,000 resamples, the same resampled trials for every model). `test_differences.csv` gives XGBoost minus the logit and the random forest minus the logit. When a difference's interval includes 0, the test set does not show that the two models differ.
+
+Outputs go to `reports/models/<build name>/`:
+
+- `summary.csv`: the selected models' settings, tuning scores (`split == "tuning"`), and test scores
+- `test_intervals.csv` and `test_differences.csv`: test scores and differences with 95% intervals
+- `tuning_<model>_phase_<P>.csv`: every candidate's tuning scores
+- `logit_coefficients_phase_<P>.csv` and `importances_{xgboost,random_forest}_phase_<P>.csv`
+- `figures/test_roc_auc.png` and `figures/test_diagnostics_phase_<P>.png`
+- `run.json`: configuration, input hashes, and library versions
+
+The selected models are saved to `models/{logit,xgboost,random_forest}_phase_<P>.joblib`. A full run of all three phases took about 15 minutes on 2 CPU cores; more cores make it faster. `--tuning valid` is about 2.5 times faster.
+
 ## Development setup
 
 Requires Python 3.12 (see `.python-version`). [uv](https://docs.astral.sh/uv/) is used if it's installed; otherwise the standard `venv` + `pip` path is used.
@@ -194,6 +229,7 @@ In Jupyter or VS Code, choose `dev/bin/python` as the kernel / interpreter.
 | `make lint` | Run every pre-commit hook against the whole repo |
 | `make test` | Run the test suite with pytest |
 | `make baseline` | Compare the regularized logit with XGBoost chain lengths on each TOP phase |
+| `make models` | Tune logit, XGBoost, and random forest; compare them on each TOP test set |
 
 ## Conventions
 
