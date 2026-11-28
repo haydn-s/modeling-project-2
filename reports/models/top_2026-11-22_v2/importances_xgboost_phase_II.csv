@@ -1,0 +1,514 @@
+feature,importance
+sponsor_class_INDUSTRY,0.10191144727786991
+icd_chapters=neoplasms,0.022389778721399186
+sponsor_class_OTHER,0.021557446428665774
+criteria_text_1,0.020112674552212727
+arm_count,0.019246067726311763
+missingindicator_arm_count,0.016379199815304578
+allocation_RANDOMIZED,0.01599602018299313
+sponsor_class_NIH,0.015346449699788217
+intervention_model_PARALLEL,0.013218247245505703
+icd_chapters=infectious,0.012951624495292668
+intervention_types=procedure,0.012610896408300591
+icd_chapters=mental_behavioral,0.012527921155378737
+intervention_model_missing,0.012473190121993114
+icd_categories=c34,0.011761536745046491
+icd_chapters=endocrine_metabolic,0.011665939277353161
+criteria_text_2,0.011083624253435648
+allocation_NA,0.01046309985849848
+minimum_age_years,0.01038141448733406
+icd_chapters=musculoskeletal,0.01024081923841896
+criteria_text_5,0.010110141643536285
+masking_DOUBLE,0.009836409176834985
+allocation_NON_RANDOMIZED,0.009791347134355987
+masking_NONE,0.009747059952254016
+intervention_types=other,0.009695221606766292
+intervention_types=biological,0.00939296924904847
+missingindicator_maximum_age_years,0.009362609995959075
+icd_categories=c44,0.009343978887975354
+phases=phase1,0.009336792803036469
+criteria_text_18,0.009252260378780009
+icd_categories=c78,0.009058078691916027
+criteria_text_6,0.008973039628182279
+criteria_text_24,0.008810724074323598
+criteria_text_38,0.008450715747517525
+criteria_text_8,0.008430488352651318
+icd_chapters=health_status_factors,0.008309895118540836
+intervention_model_CROSSOVER,0.008290730362725339
+criteria_text_16,0.008241571432267315
+criteria_text_40,0.00816235127194183
+icd_categories=z80,0.00810443418404922
+intervention_model_SINGLE_GROUP,0.008092372625464007
+icd_categories=d14,0.007910102554251702
+sex_ALL,0.007721816139246604
+criteria_text_4,0.007660399141141405
+criteria_text_10,0.007599700192736553
+criteria_text_15,0.007562734137345907
+maximum_age_years,0.007547257418901844
+criteria_text_20,0.007536433122348942
+criteria_text_17,0.00751287392099377
+criteria_text_26,0.007488056968509779
+criteria_text_22,0.007449786130200603
+criteria_text_9,0.007442157667041659
+criteria_text_42,0.0074087827914753185
+criteria_text_19,0.007395585019356482
+criteria_text_0,0.007384998210058559
+criteria_text_29,0.007362674408090561
+criteria_text_7,0.007257319008185311
+criteria_text_44,0.007242360105089358
+icd_chapters=nervous_system,0.0072315153194399484
+criteria_text_3,0.007216164329542639
+conditions=multiple myeloma,0.007194170681425189
+criteria_text_32,0.007156574586316923
+icd_categories=d09,0.0070633780682052985
+icd_categories=c4a,0.00703408238548918
+criteria_text_39,0.0069968271544410005
+criteria_text_34,0.006989364001037974
+criteria_text_31,0.00698001212546594
+criteria_text_23,0.0069606261805404135
+criteria_text_48,0.006957916031865951
+icd_categories=e10,0.006940788544169143
+icd_chapters=injury_poisoning,0.006929615467314321
+criteria_text_21,0.0069233695525083815
+criteria_text_28,0.006902346808168639
+criteria_text_37,0.006862312976237209
+sex_FEMALE,0.006846092596722163
+icd_categories=d24,0.006782352880131015
+criteria_text_43,0.006763854019952027
+icd_categories=c79,0.006737326693570906
+criteria_text_46,0.006716831077804959
+criteria_text_27,0.006684238513196195
+criteria_text_12,0.00668042614426186
+criteria_text_36,0.006658623417270962
+icd_categories=s33,0.006611165547484384
+icd_categories=d49,0.00660864492295262
+criteria_text_11,0.0065587465223751725
+icd_categories=c17,0.006550659848512505
+criteria_text_49,0.006542329633798164
+criteria_text_25,0.0065116509370677575
+criteria_text_45,0.006465550935586117
+criteria_text_30,0.0064409970817277395
+masking_QUADRUPLE,0.006422058637296398
+criteria_text_35,0.006360494955886654
+criteria_text_33,0.006359313573208456
+icd_categories=c22,0.006330807186369179
+criteria_text_41,0.0063229351823585606
+icd_categories=c7b,0.006313245702355429
+icd_chapters=pregnancy,0.006261405494222568
+criteria_text_14,0.0062506459245881794
+criteria_text_13,0.006209508475413025
+criteria_text_47,0.0060947737259199695
+icd_chapters=genitourinary,0.005846064965312877
+missingindicator_minimum_age_years,0.0058342790782079535
+icd_chapters=skin,0.00565639646761606
+icd_categories=c05,0.005594374575502591
+intervention_types=radiation,0.005133892376034291
+icd_categories=c92,0.004907946535986266
+icd_chapters=digestive,0.00406731196821557
+masking_TRIPLE,0.0029423632467197786
+study_type_INTERVENTIONAL,0.0
+allocation_missing,0.0
+intervention_model_FACTORIAL,0.0
+intervention_model_SEQUENTIAL,0.0
+primary_purpose_BASIC_SCIENCE,0.0
+primary_purpose_DIAGNOSTIC,0.0
+primary_purpose_PREVENTION,0.0
+primary_purpose_SUPPORTIVE_CARE,0.0
+primary_purpose_TREATMENT,0.0
+primary_purpose_missing,0.0
+primary_purpose_infrequent_sklearn,0.0
+masking_SINGLE,0.0
+masking_missing,0.0
+sponsor_class_NETWORK,0.0
+sponsor_class_OTHER_GOV,0.0
+sponsor_class_infrequent_sklearn,0.0
+sex_MALE,0.0
+sex_infrequent_sklearn,0.0
+healthy_volunteers_False,0.0
+healthy_volunteers_True,0.0
+healthy_volunteers_missing,0.0
+phases=phase2,0.0
+phases=phase3,0.0
+conditions=acute lymphoblastic leukemia,0.0
+conditions=acute myelogenous leukemia,0.0
+conditions=acute myeloid leukemia,0.0
+conditions=adult giant cell glioblastoma,0.0
+conditions=adult glioblastoma,0.0
+conditions=adult gliosarcoma,0.0
+conditions=allergic rhinitis,0.0
+conditions=alzheimer disease,0.0
+conditions=alzheimer's disease,0.0
+conditions=amyotrophic lateral sclerosis,0.0
+conditions=anemia,0.0
+"conditions=arthritis, rheumatoid",0.0
+conditions=asthma,0.0
+conditions=atopic dermatitis,0.0
+conditions=atrial fibrillation,0.0
+conditions=bladder cancer,0.0
+conditions=breast cancer,0.0
+conditions=breast neoplasms,0.0
+conditions=cancer,0.0
+"conditions=carcinoma, hepatocellular",0.0
+"conditions=carcinoma, non-small-cell lung",0.0
+"conditions=carcinoma, renal cell",0.0
+conditions=chronic hepatitis c,0.0
+conditions=chronic kidney disease,0.0
+conditions=chronic lymphocytic leukemia,0.0
+conditions=chronic myelogenous leukemia,0.0
+conditions=chronic obstructive pulmonary disease,0.0
+conditions=chronic obstructive pulmonary disease (copd),0.0
+conditions=colon cancer,0.0
+conditions=colorectal cancer,0.0
+conditions=colorectal neoplasms,0.0
+conditions=coronary artery disease,0.0
+conditions=crohn's disease,0.0
+conditions=cystic fibrosis,0.0
+conditions=depression,0.0
+"conditions=depressive disorder, major",0.0
+conditions=diabetes,0.0
+conditions=diabetes mellitus,0.0
+conditions=diabetes mellitus type 2,0.0
+"conditions=diabetes mellitus, type 2",0.0
+conditions=endometrial cancer,0.0
+conditions=esophageal cancer,0.0
+conditions=fallopian tube cancer,0.0
+conditions=follicular lymphoma,0.0
+conditions=gastric cancer,0.0
+conditions=glaucoma,0.0
+conditions=glioblastoma multiforme,0.0
+conditions=graft versus host disease,0.0
+conditions=head and neck cancer,0.0
+conditions=heart failure,0.0
+conditions=hepatitis c,0.0
+"conditions=hepatitis c, chronic",0.0
+conditions=hepatocellular carcinoma,0.0
+conditions=hiv infection,0.0
+conditions=hiv infections,0.0
+conditions=hypercholesterolemia,0.0
+conditions=hypertension,0.0
+conditions=irritable bowel syndrome,0.0
+conditions=kidney cancer,0.0
+conditions=kidney transplantation,0.0
+conditions=leukemia,0.0
+conditions=liver cancer,0.0
+conditions=lung cancer,0.0
+conditions=lymphoma,0.0
+"conditions=lymphoma, b-cell",0.0
+"conditions=lymphoma, non-hodgkin",0.0
+conditions=major depressive disorder,0.0
+conditions=malignant melanoma,0.0
+conditions=melanoma,0.0
+conditions=melanoma (skin),0.0
+conditions=metastatic breast cancer,0.0
+conditions=metastatic cancer,0.0
+conditions=metastatic colorectal cancer,0.0
+conditions=metastatic melanoma,0.0
+conditions=migraine,0.0
+conditions=multiple myeloma and plasma cell neoplasm,0.0
+conditions=multiple sclerosis,0.0
+conditions=myelodysplastic syndrome,0.0
+conditions=myelodysplastic syndromes,0.0
+conditions=neoplasm metastasis,0.0
+conditions=neoplasms,0.0
+"conditions=neoplasms, breast",0.0
+conditions=non small cell lung cancer,0.0
+conditions=non-hodgkin's lymphoma,0.0
+conditions=non-small cell lung cancer,0.0
+conditions=non-small-cell lung cancer,0.0
+conditions=non-small-cell lung carcinoma,0.0
+conditions=obesity,0.0
+conditions=ocular hypertension,0.0
+conditions=osteoarthritis,0.0
+conditions=ovarian cancer,0.0
+conditions=ovarian neoplasms,0.0
+conditions=pain,0.0
+conditions=pancreatic cancer,0.0
+conditions=parkinson disease,0.0
+conditions=parkinson's disease,0.0
+conditions=peritoneal cancer,0.0
+conditions=primary peritoneal cavity cancer,0.0
+conditions=prostate cancer,0.0
+conditions=prostatic neoplasms,0.0
+conditions=psoriasis,0.0
+conditions=psoriasis vulgaris,0.0
+"conditions=pulmonary disease, chronic obstructive",0.0
+conditions=pulmonary hypertension,0.0
+conditions=rectal cancer,0.0
+conditions=recurrent adult diffuse large cell lymphoma,0.0
+conditions=recurrent breast cancer,0.0
+conditions=recurrent grade 1 follicular lymphoma,0.0
+conditions=recurrent grade 2 follicular lymphoma,0.0
+conditions=recurrent mantle cell lymphoma,0.0
+conditions=recurrent melanoma,0.0
+conditions=recurrent non-small cell lung cancer,0.0
+conditions=recurrent prostate cancer,0.0
+conditions=renal cell carcinoma,0.0
+conditions=rheumatoid arthritis,0.0
+conditions=sarcoma,0.0
+conditions=schizophrenia,0.0
+conditions=sickle cell disease,0.0
+conditions=small cell lung cancer,0.0
+conditions=stage iiib breast cancer,0.0
+conditions=stage iv breast cancer,0.0
+conditions=stage iv melanoma,0.0
+conditions=stage iv pancreatic cancer,0.0
+conditions=stage iv prostate cancer,0.0
+conditions=stomach neoplasms,0.0
+conditions=type 2 diabetes,0.0
+conditions=type 2 diabetes mellitus,0.0
+conditions=ulcerative colitis,0.0
+intervention_types=behavioral,0.0
+intervention_types=device,0.0
+intervention_types=dietary_supplement,0.0
+intervention_types=drug,0.0
+intervention_types=genetic,0.0
+icd_chapters=blood_immune,0.0
+icd_chapters=circulatory,0.0
+icd_chapters=congenital,0.0
+icd_chapters=external_causes,0.0
+icd_chapters=eye,0.0
+icd_chapters=perinatal,0.0
+icd_chapters=respiratory,0.0
+icd_chapters=symptoms_findings,0.0
+icd_categories=a02,0.0
+icd_categories=a06,0.0
+icd_categories=a36,0.0
+icd_categories=a50,0.0
+icd_categories=a51,0.0
+icd_categories=a52,0.0
+icd_categories=a54,0.0
+icd_categories=a87,0.0
+icd_categories=b00,0.0
+icd_categories=b02,0.0
+icd_categories=b15,0.0
+icd_categories=b17,0.0
+icd_categories=b18,0.0
+icd_categories=b19,0.0
+icd_categories=b20,0.0
+icd_categories=b25,0.0
+icd_categories=b26,0.0
+icd_categories=b38,0.0
+icd_categories=b58,0.0
+icd_categories=b73,0.0
+icd_categories=c10,0.0
+icd_categories=c14,0.0
+icd_categories=c16,0.0
+icd_categories=c18,0.0
+icd_categories=c24,0.0
+icd_categories=c25,0.0
+icd_categories=c30,0.0
+icd_categories=c43,0.0
+icd_categories=c45,0.0
+icd_categories=c46,0.0
+icd_categories=c47,0.0
+icd_categories=c49,0.0
+icd_categories=c57,0.0
+icd_categories=c61,0.0
+icd_categories=c67,0.0
+icd_categories=c71,0.0
+icd_categories=c73,0.0
+icd_categories=c76,0.0
+icd_categories=c77,0.0
+icd_categories=c81,0.0
+icd_categories=c83,0.0
+icd_categories=c84,0.0
+icd_categories=c88,0.0
+icd_categories=c90,0.0
+icd_categories=c91,0.0
+icd_categories=c93,0.0
+icd_categories=c94,0.0
+icd_categories=c95,0.0
+icd_categories=c96,0.0
+icd_categories=d02,0.0
+icd_categories=d03,0.0
+icd_categories=d12,0.0
+icd_categories=d13,0.0
+icd_categories=d17,0.0
+icd_categories=d21,0.0
+icd_categories=d23,0.0
+icd_categories=d28,0.0
+icd_categories=d29,0.0
+icd_categories=d30,0.0
+icd_categories=d33,0.0
+icd_categories=d36,0.0
+icd_categories=d37,0.0
+icd_categories=d40,0.0
+icd_categories=d41,0.0
+icd_categories=d46,0.0
+icd_categories=d47,0.0
+icd_categories=d48,0.0
+icd_categories=d53,0.0
+icd_categories=d57,0.0
+icd_categories=d61,0.0
+icd_categories=d63,0.0
+icd_categories=d64,0.0
+icd_categories=d68,0.0
+icd_categories=d69,0.0
+icd_categories=d72,0.0
+icd_categories=d75,0.0
+icd_categories=d81,0.0
+icd_categories=d89,0.0
+icd_categories=e08,0.0
+icd_categories=e11,0.0
+icd_categories=e13,0.0
+icd_categories=e23,0.0
+icd_categories=e24,0.0
+icd_categories=e26,0.0
+icd_categories=e66,0.0
+icd_categories=e70,0.0
+icd_categories=e78,0.0
+icd_categories=e84,0.0
+icd_categories=e85,0.0
+icd_categories=e89,0.0
+icd_categories=f10,0.0
+icd_categories=f20,0.0
+icd_categories=f25,0.0
+icd_categories=f32,0.0
+icd_categories=f33,0.0
+icd_categories=f51,0.0
+icd_categories=f53,0.0
+icd_categories=f84,0.0
+icd_categories=f90,0.0
+icd_categories=g03,0.0
+icd_categories=g12,0.0
+icd_categories=g20,0.0
+icd_categories=g25,0.0
+icd_categories=g30,0.0
+icd_categories=g35,0.0
+icd_categories=g40,0.0
+icd_categories=g43,0.0
+icd_categories=g47,0.0
+icd_categories=g60,0.0
+icd_categories=g91,0.0
+icd_categories=g93,0.0
+icd_categories=h01,0.0
+icd_categories=h02,0.0
+icd_categories=h04,0.0
+icd_categories=h05,0.0
+icd_categories=h10,0.0
+icd_categories=h18,0.0
+icd_categories=h35,0.0
+icd_categories=h40,0.0
+icd_categories=h44,0.0
+icd_categories=h46,0.0
+icd_categories=i09,0.0
+icd_categories=i10,0.0
+icd_categories=i11,0.0
+icd_categories=i12,0.0
+icd_categories=i13,0.0
+icd_categories=i15,0.0
+icd_categories=i25,0.0
+icd_categories=i27,0.0
+icd_categories=i42,0.0
+icd_categories=i48,0.0
+icd_categories=i50,0.0
+icd_categories=i67,0.0
+icd_categories=i70,0.0
+icd_categories=i75,0.0
+icd_categories=i85,0.0
+icd_categories=i97,0.0
+icd_categories=j01,0.0
+icd_categories=j05,0.0
+icd_categories=j30,0.0
+icd_categories=j44,0.0
+icd_categories=j45,0.0
+icd_categories=j82,0.0
+icd_categories=j84,0.0
+icd_categories=k11,0.0
+icd_categories=k12,0.0
+icd_categories=k20,0.0
+icd_categories=k21,0.0
+icd_categories=k22,0.0
+icd_categories=k31,0.0
+icd_categories=k50,0.0
+icd_categories=k51,0.0
+icd_categories=k52,0.0
+icd_categories=k58,0.0
+icd_categories=k59,0.0
+icd_categories=k65,0.0
+icd_categories=k66,0.0
+icd_categories=k70,0.0
+icd_categories=k71,0.0
+icd_categories=k74,0.0
+icd_categories=k75,0.0
+icd_categories=k76,0.0
+icd_categories=k91,0.0
+icd_categories=l20,0.0
+icd_categories=l40,0.0
+icd_categories=l51,0.0
+icd_categories=m05,0.0
+icd_categories=m06,0.0
+icd_categories=m15,0.0
+icd_categories=m16,0.0
+icd_categories=m17,0.0
+icd_categories=m19,0.0
+icd_categories=m34,0.0
+icd_categories=m35,0.0
+icd_categories=m79,0.0
+icd_categories=m80,0.0
+icd_categories=m81,0.0
+icd_categories=n11,0.0
+icd_categories=n13,0.0
+icd_categories=n18,0.0
+icd_categories=n19,0.0
+icd_categories=n20,0.0
+icd_categories=n23,0.0
+icd_categories=n25,0.0
+icd_categories=n26,0.0
+icd_categories=n31,0.0
+icd_categories=n32,0.0
+icd_categories=n40,0.0
+icd_categories=n42,0.0
+icd_categories=n46,0.0
+icd_categories=n50,0.0
+icd_categories=n73,0.0
+icd_categories=n85,0.0
+icd_categories=n91,0.0
+icd_categories=n94,0.0
+icd_categories=n95,0.0
+icd_categories=n96,0.0
+icd_categories=n99,0.0
+icd_categories=o21,0.0
+icd_categories=o24,0.0
+icd_categories=o28,0.0
+icd_categories=o88,0.0
+icd_categories=o98,0.0
+icd_categories=o99,0.0
+icd_categories=p09,0.0
+icd_categories=p29,0.0
+icd_categories=p61,0.0
+icd_categories=p70,0.0
+icd_categories=p78,0.0
+icd_categories=p91,0.0
+icd_categories=p96,0.0
+icd_categories=q15,0.0
+icd_categories=q39,0.0
+icd_categories=q60,0.0
+icd_categories=q61,0.0
+icd_categories=q63,0.0
+icd_categories=r06,0.0
+icd_categories=r07,0.0
+icd_categories=r10,0.0
+icd_categories=r11,0.0
+icd_categories=r14,0.0
+icd_categories=r19,0.0
+icd_categories=r52,0.0
+icd_categories=r75,0.0
+icd_categories=r88,0.0
+icd_categories=t45,0.0
+icd_categories=t86,0.0
+icd_categories=z11,0.0
+icd_categories=z12,0.0
+icd_categories=z13,0.0
+icd_categories=z14,0.0
+icd_categories=z15,0.0
+icd_categories=z21,0.0
+icd_categories=z49,0.0
+icd_categories=z52,0.0
+icd_categories=z71,0.0
+icd_categories=z82,0.0
+icd_categories=z83,0.0
+icd_categories=z85,0.0
+icd_categories=z86,0.0
+icd_categories=z87,0.0
+icd_categories=z92,0.0

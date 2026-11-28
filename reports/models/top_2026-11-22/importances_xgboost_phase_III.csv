@@ -1,0 +1,146 @@
+feature,importance
+sponsor_class_INDUSTRY,0.09725184192934681
+sponsor_class_NETWORK,0.04718750823005347
+sponsor_class_OTHER,0.043817268088468905
+sponsor_class_NIH,0.03514313128090123
+intervention_model_missing,0.032948346822394156
+sponsor_class_OTHER_GOV,0.016893072968528003
+allocation_RANDOMIZED,0.014899453243527507
+conditions=type 2 diabetes mellitus,0.012996808827800925
+conditions=breast neoplasms,0.012412588346881375
+intervention_model_SINGLE_GROUP,0.012277079988555917
+healthy_volunteers_False,0.011595093925851948
+conditions=parkinson disease,0.011593586114688251
+"conditions=diabetes mellitus, type 2",0.011548426285579163
+conditions=major depressive disorder,0.01147258589861607
+phases=phase2,0.011176814629320912
+sex_ALL,0.011144343138256414
+conditions=non-small cell lung cancer,0.010583091864705753
+"conditions=carcinoma, non-small-cell lung",0.010536747393348226
+conditions=type 2 diabetes,0.010084090188549428
+conditions=lupus nephritis,0.010069636063002449
+conditions=melanoma,0.00966671986280021
+conditions=hypertension,0.009442340052778844
+conditions=crohn's disease,0.009423096135499381
+conditions=chronic obstructive pulmonary disease,0.009283509515848524
+conditions=bipolar disorder,0.009136818767997127
+intervention_model_FACTORIAL,0.008784080362654439
+conditions=lung cancer,0.00857428506333318
+conditions=ocular hypertension,0.008531791610605601
+conditions=rheumatoid arthritis,0.00851904832453219
+conditions=anemia,0.008455384979548916
+conditions=attention deficit hyperactivity disorder,0.008431449059401819
+conditions=alzheimer's disease,0.008350071960043315
+conditions=cancer,0.008326841051045643
+conditions=asthma,0.008312308694406786
+allocation_NA,0.008240417114938487
+"conditions=hepatitis c, chronic",0.008184949408151952
+sex_FEMALE,0.007818493553377468
+minimum_age_years,0.007624599189141671
+conditions=prostate cancer,0.007556334645236691
+conditions=atherosclerosis,0.0075556803911647355
+conditions=hiv infection,0.00755028058318011
+missingindicator_minimum_age_years,0.007534497460393727
+conditions=obesity,0.007491110869367206
+conditions=colorectal cancer,0.007474437867910712
+conditions=diabetes,0.007427868482164037
+conditions=psoriasis,0.007413787816948522
+primary_purpose_infrequent_sklearn,0.007332170902040511
+conditions=chronic pain,0.007285517231605562
+conditions=multiple myeloma,0.007231624856865595
+arm_count,0.007172547343982405
+conditions=stroke,0.007100205470074546
+sponsor_class_infrequent_sklearn,0.007092088062969683
+conditions=chronic obstructive pulmonary disease (copd),0.006999550460164514
+healthy_volunteers_True,0.0069948859313112895
+intervention_types=procedure,0.006977898142842238
+conditions=pulmonary hypertension,0.006971312761286652
+conditions=hiv infections,0.00696556277603362
+conditions=chronic kidney disease,0.0069122743639494005
+conditions=gastric cancer,0.006832368754176221
+intervention_types=device,0.006800587838762051
+conditions=fibromyalgia,0.006699376363644911
+masking_missing,0.006651209294111133
+conditions=cardiovascular disease,0.006618603226942155
+conditions=generalized anxiety disorder,0.006616710779576726
+conditions=pain,0.006594226325580724
+healthy_volunteers_missing,0.006492800646283442
+conditions=osteoporosis,0.006428201787826458
+missingindicator_arm_count,0.00641871533661373
+conditions=pancreatic cancer,0.006381212841283461
+conditions=essential hypertension,0.0062384215408331735
+conditions=venous thromboembolism,0.0061910018576235865
+allocation_missing,0.006113676476898596
+conditions=hypercholesterolemia,0.006058846260378615
+"conditions=depressive disorder, major",0.005947774873717282
+conditions=hepatitis c,0.005908614624297218
+intervention_types=dietary_supplement,0.005874759187964498
+conditions=restless legs syndrome,0.005849434200275307
+sex_MALE,0.005800431734438974
+conditions=hyperlipidemia,0.005684129109169563
+"conditions=hepatitis b, chronic",0.0055731741378235245
+intervention_types=other,0.005494200781895223
+maximum_age_years,0.005435150743026442
+conditions=diabetes mellitus,0.005288823676620026
+conditions=breast cancer,0.005285405722962977
+primary_purpose_PREVENTION,0.005273051729703912
+intervention_model_CROSSOVER,0.0052413122581419875
+conditions=schizophrenia,0.005137337549101014
+primary_purpose_TREATMENT,0.005135588525404028
+"conditions=pulmonary disease, chronic obstructive",0.00508328033027459
+conditions=epilepsy,0.005020343416858752
+conditions=allergic rhinitis,0.004995175357014579
+conditions=insomnia,0.004917445316653624
+missingindicator_maximum_age_years,0.004859601806112557
+conditions=atrial fibrillation,0.004781971882922755
+conditions=kidney transplantation,0.004779884789150154
+conditions=metastatic breast cancer,0.004462038847768828
+allocation_NON_RANDOMIZED,0.004427720078481236
+intervention_model_PARALLEL,0.004337406473859455
+intervention_types=radiation,0.004172309067676196
+masking_DOUBLE,0.004006417243381367
+conditions=bladder cancer,0.004005725270747256
+phases=phase3,0.0039043745629130234
+masking_TRIPLE,0.003798039649769767
+masking_QUADRUPLE,0.0032431693324810338
+intervention_types=biological,0.0031982393072043373
+conditions=head and neck cancer,0.002975228541290835
+masking_NONE,0.0029519203325238078
+conditions=cystic fibrosis,0.0025918186584887337
+conditions=parkinson's disease,0.001645385195375925
+study_type_INTERVENTIONAL,0.0
+intervention_model_infrequent_sklearn,0.0
+primary_purpose_SUPPORTIVE_CARE,0.0
+primary_purpose_missing,0.0
+masking_SINGLE,0.0
+sex_infrequent_sklearn,0.0
+conditions=alzheimer disease,0.0
+conditions=benign prostatic hyperplasia,0.0
+conditions=bipolar i disorder,0.0
+conditions=cerebrovascular accident,0.0
+conditions=chronic hepatitis c,0.0
+conditions=coronary artery disease,0.0
+conditions=depression,0.0
+conditions=depressive disorder,0.0
+"conditions=diabetes mellitus, type 1",0.0
+conditions=diabetic macular edema,0.0
+conditions=dyslipidemia,0.0
+conditions=fallopian tube cancer,0.0
+conditions=glaucoma,0.0
+conditions=hepatitis b,0.0
+conditions=leukemia,0.0
+conditions=low back pain,0.0
+conditions=lymphoma,0.0
+conditions=metastatic cancer,0.0
+conditions=migraine,0.0
+conditions=multiple sclerosis,0.0
+conditions=myocardial infarction,0.0
+conditions=open-angle glaucoma,0.0
+conditions=osteoarthritis,0.0
+conditions=ovarian cancer,0.0
+conditions=schizoaffective disorder,0.0
+conditions=seasonal allergic rhinitis,0.0
+conditions=sleep initiation and maintenance disorders,0.0
+conditions=ulcerative colitis,0.0
+intervention_types=behavioral,0.0
+intervention_types=drug,0.0

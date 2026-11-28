@@ -3,7 +3,14 @@ from copy import deepcopy
 import pandas as pd
 import pytest
 
-from trial_outcome.features import FEATURE_DTYPES, build_features, get_path, nct_id
+from trial_outcome.features import (
+    FEATURE_DTYPES,
+    build_features,
+    get_path,
+    icd10_category,
+    icd10_chapter,
+    nct_id,
+)
 
 STUDY = {
     "protocolSection": {
@@ -94,3 +101,25 @@ def test_empty_features_keep_schema():
     frame = build_features([])
     assert frame.empty
     assert frame.dtypes.astype(str).to_dict() == FEATURE_DTYPES
+
+
+@pytest.mark.parametrize(
+    "code,chapter",
+    [
+        ("A41.9", "infectious"),
+        ("D49.9", "neoplasms"),  # the last neoplasm category
+        ("D50.0", "blood_immune"),  # the first blood category
+        ("O9A.11", "pregnancy"),
+        ("T88.7", "injury_poisoning"),
+        ("Z79", "health_status_factors"),
+        ("U99.9", None),  # past the special-purpose codes
+    ],
+)
+def test_icd10_chapter(code, chapter):
+    assert icd10_chapter(code) == chapter
+
+
+@pytest.mark.parametrize("code", ["C5", "c50.9", "C50.", "50.9", "C50.91234"])
+def test_invalid_icd10_codes_fail(code):
+    with pytest.raises(ValueError, match="invalid ICD-10 code"):
+        icd10_category(code)

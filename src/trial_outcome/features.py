@@ -110,6 +110,59 @@ def build_features(studies: Iterable[Mapping[str, Any]]) -> pd.DataFrame:
     return frame.set_index("nct_id").astype(FEATURE_DTYPES).sort_index()
 
 
+# ICD-10-CM chapters as (first category, last category, name). Categories are the first three
+# characters of a code; comparing them as strings orders them correctly (e.g. "O9A" > "O99").
+ICD10_CHAPTERS = (
+    ("A00", "B99", "infectious"),
+    ("C00", "D49", "neoplasms"),
+    ("D50", "D89", "blood_immune"),
+    ("E00", "E89", "endocrine_metabolic"),
+    ("F01", "F99", "mental_behavioral"),
+    ("G00", "G99", "nervous_system"),
+    ("H00", "H59", "eye"),
+    ("H60", "H95", "ear"),
+    ("I00", "I99", "circulatory"),
+    ("J00", "J99", "respiratory"),
+    ("K00", "K95", "digestive"),
+    ("L00", "L99", "skin"),
+    ("M00", "M99", "musculoskeletal"),
+    ("N00", "N99", "genitourinary"),
+    ("O00", "O9A", "pregnancy"),
+    ("P00", "P96", "perinatal"),
+    ("Q00", "Q99", "congenital"),
+    ("R00", "R99", "symptoms_findings"),
+    ("S00", "T88", "injury_poisoning"),
+    ("U00", "U85", "special_purposes"),
+    ("V00", "Y99", "external_causes"),
+    ("Z00", "Z99", "health_status_factors"),
+)
+_ICD10_CODE = re.compile(r"[A-Z][0-9][0-9A-Z](?:\.[0-9A-Z]{1,4})?")
+
+
+def icd10_category(code: str) -> str:
+    """Return an ICD-10 code's three-character category.
+
+    >>> icd10_category("C50.911")
+    'C50'
+    """
+    if not _ICD10_CODE.fullmatch(code):
+        raise ValueError(f"invalid ICD-10 code: {code!r}")
+    return code[:3]
+
+
+def icd10_chapter(code: str) -> str | None:
+    """Return the ICD-10-CM chapter of a code, or ``None`` if no chapter covers it.
+
+    >>> icd10_chapter("C50.911"), icd10_chapter("D63.1"), icd10_chapter("O9A.1")
+    ('neoplasms', 'blood_immune', 'pregnancy')
+    """
+    category = icd10_category(code)
+    for first, last, name in ICD10_CHAPTERS:
+        if first <= category <= last:
+            return name
+    return None
+
+
 def _object_list(value: Any, name: str) -> None:
     if not isinstance(value, list) or any(not isinstance(item, Mapping) for item in value):
         raise ValueError(f"{name} must be a list of objects")

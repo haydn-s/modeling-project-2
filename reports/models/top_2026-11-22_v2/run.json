@@ -1,0 +1,58 @@
+{
+  "created_utc": "2026-11-26T01:28:48+00:00",
+  "inputs": {
+    "I": {
+      "data/processed/top_2026-11-22_v2/phase_I/dataset.parquet": "987551bc74131847110c706ed20e10c4b605ca5fa2d896eb65a419ac062719d2",
+      "data/interim/top_labels/phase_I.csv": "44d280a6db2c14d4267dcd8eeb6a4ee94363bcae3a1049891f22f07faf2d2f89"
+    },
+    "II": {
+      "data/processed/top_2026-11-22_v2/phase_II/dataset.parquet": "5c74a07d8ce64c44adc4e6dbbf824f12030856414b879d4daffdb166b2ce835e",
+      "data/interim/top_labels/phase_II.csv": "5ecbd7af5825994762b039bd896f5d684c48e6d01f74f2fb7f2aadb957bad820"
+    },
+    "III": {
+      "data/processed/top_2026-11-22_v2/phase_III/dataset.parquet": "48c446e06e3198019fee0ff17e77c9623f1a42770d103507479541cc588b144f",
+      "data/interim/top_labels/phase_III.csv": "10a9852f9bee91301751fa2e3276e193c3f899657794004853a4177eba3d15de"
+    }
+  },
+  "config": {
+    "selection_metric": "log_loss",
+    "tuning": "cv",
+    "n_folds": 5,
+    "c_grid": [
+      0.001,
+      0.003,
+      0.01,
+      0.03,
+      0.1,
+      0.3,
+      1.0,
+      3.0,
+      10.0,
+      30.0,
+      100.0
+    ],
+    "chain_lengths": [
+      10,
+      25,
+      50,
+      100,
+      200,
+      400,
+      800,
+      1600
+    ],
+    "xgboost_candidates": 30,
+    "forest_candidates": 20,
+    "min_count": 10,
+    "n_bootstrap": 2000,
+    "confidence": 0.95,
+    "random_state": 42
+  },
+  "versions": {
+    "python": "3.12.15",
+    "numpy": "2.5.4",
+    "pandas": "3.1.1",
+    "scikit-learn": "1.9.1",
+    "xgboost": "3.4.1"
+  }
+}

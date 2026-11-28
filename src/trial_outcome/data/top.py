@@ -14,13 +14,16 @@ Trials registered as phase 1/2 or 2/3 appear in both phases' files.
 
 ``labels`` writes one labels file per phase. Each keeps the TOP split and TOP's
 ``status``/``why_stop`` columns for analysis; the dataset build reads only ``nct_id`` and
-``label``, so those columns never become features. TOP is licensed for non-commercial
-academic use only.
+``label``, so those columns never become features. ``labels`` also writes the TOP feature
+table (:func:`load_top_features`): ICD-10 chapters and categories and the eligibility criteria
+text, which ``datasets`` adds to the registry features unless ``--registry-only`` is passed.
+TOP is licensed for non-commercial academic use only.
 """
 
 from __future__ import annotations
 
 import argparse
+import ast
 import hashlib
 import json
 from contextlib import closing, nullcontext
@@ -35,6 +38,7 @@ from trial_outcome.config import EXTERNAL_DATA_DIR, INTERIM_DATA_DIR, PROCESSED_
 from trial_outcome.data.ctgov import make_session
 from trial_outcome.data.pipeline import build_dataset
 from trial_outcome.data.validation import validate_nct_ids
+from trial_outcome.features import icd10_category, icd10_chapter
 from trial_outcome.labeling import validate_labels
 
 TOP_REPO = "https://github.com/futianfan/clinical-trial-outcome-prediction"
@@ -67,6 +71,8 @@ LABEL_COLUMNS = ["nct_id", "label", "split", "top_phase", "status", "why_stop"]
 
 TOP_DIR = EXTERNAL_DATA_DIR / "top"
 LABELS_DIR = INTERIM_DATA_DIR / "top_labels"
+TOP_FEATURES_PATH = INTERIM_DATA_DIR / "top_features.parquet"
+TOP_FEATURE_DTYPES = {"icd_chapters": "string", "icd_categories": "string", "criteria": "string"}
 
 
 def top_filename(phase: str, split: str) -> str:
@@ -120,14 +126,7 @@ def load_top(top_dir: str | Path = TOP_DIR) -> pd.DataFrame:
     frames = []
     for phase in PHASES:
         for split in SPLITS:
-            name = top_filename(phase, split)
-            path = top_dir / name
-            if not path.exists():
-                raise FileNotFoundError(
-                    f"missing {path}; run `python -m trial_outcome.data.top labels`"
-                )
-            if _sha256(path) != TOP_SHA256[name]:
-                raise ValueError(f"{path} does not match the pinned TOP commit; download it again")
+            path = _verified_top_file(top_dir, phase, split)
             frame = pd.read_csv(
                 path,
                 usecols=["nctid", "label", "phase", "status", "why_stop"],
@@ -163,18 +162,82 @@ def load_top(top_dir: str | Path = TOP_DIR) -> pd.DataFrame:
     return top[["phase", *LABEL_COLUMNS]]
 
 
+def load_top_features(top_dir: str | Path = TOP_DIR) -> pd.DataFrame:
+    """One row per TOP trial with features from TOP's ICD codes and eligibility criteria text.
+
+    The columns are :data:`TOP_FEATURE_DTYPES`, indexed by ``nct_id``:
+
+    - ``icd_chapters`` and ``icd_categories``: the ICD-10-CM chapters (e.g. ``neoplasms``) and
+      three-character categories (e.g. ``C50``) of TOP's codes for the trial's diseases, sorted,
+      deduplicated, and joined with ``|``. TOP mapped disease names to codes automatically, so a
+      broad name such as "cancer" can map to many specific codes.
+    - ``criteria``: the eligibility criteria text, missing if TOP's is blank.
+
+    A trial listed in two phases must have the same values in both. TOP's drug names and SMILES
+    strings are not used: drug names did not improve cross-validated log loss.
+    """
+    top_dir = Path(top_dir)
+    frames = [
+        pd.read_csv(
+            _verified_top_file(top_dir, phase, split),
+            usecols=["nctid", "icdcodes", "criteria"],
+            dtype="string",
+            keep_default_na=False,
+        )
+        for phase in PHASES
+        for split in SPLITS
+    ]
+    top = pd.concat(frames, ignore_index=True).drop_duplicates()
+    conflicting = top.loc[top["nctid"].duplicated(), "nctid"].tolist()
+    if conflicting:
+        raise ValueError(
+            f"trials have different ICD codes or criteria in different phases: {conflicting[:5]}"
+        )
+
+    rows = []
+    for trial in top.itertuples(index=False):
+        try:
+            codes = {code for group in _parse_list(trial.icdcodes) for code in _parse_list(group)}
+            categories = {icd10_category(code) for code in codes}
+        except ValueError as error:
+            raise ValueError(f"{trial.nctid}: {error}") from error
+        rows.append(
+            {
+                "nct_id": trial.nctid,
+                "icd_chapters": "|".join(sorted({icd10_chapter(code) for code in codes} - {None})),
+                "icd_categories": "|".join(sorted(categories)),
+                "criteria": trial.criteria if trial.criteria.strip() else None,
+            }
+        )
+    features = pd.DataFrame(rows, columns=["nct_id", *TOP_FEATURE_DTYPES])
+    validate_nct_ids(features["nct_id"], source=str(top_dir))
+    features["nct_id"] = features["nct_id"].astype("string")
+    return features.set_index("nct_id").astype(TOP_FEATURE_DTYPES).sort_index()
+
+
+def write_top_features(features: pd.DataFrame, path: str | Path = TOP_FEATURES_PATH) -> Path:
+    """Write the TOP feature table to Parquet, atomically; an unchanged file is not rewritten."""
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    _write_if_changed(path, features.to_parquet(index=True))
+    return path
+
+
 def write_label_files(top: pd.DataFrame, out_dir: str | Path = LABELS_DIR) -> dict[str, Path]:
-    """Write one labels file per phase plus ``nct_ids.txt`` listing every TOP trial once."""
+    """Write one labels file per phase plus ``nct_ids.txt`` listing every TOP trial once.
+
+    Files whose content is unchanged are not rewritten, so their timestamps don't change.
+    """
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     paths = {}
     for phase in PHASES:
         rows = top.loc[top["phase"].eq(phase), LABEL_COLUMNS].sort_values("nct_id")
         path = out_dir / labels_filename(phase)
-        _write_bytes_atomic(path, rows.to_csv(index=False).encode("utf-8"))
+        _write_if_changed(path, rows.to_csv(index=False).encode("utf-8"))
         paths[phase] = path
     ids = sorted(top["nct_id"].unique())
-    _write_bytes_atomic(out_dir / "nct_ids.txt", ("\n".join(ids) + "\n").encode("utf-8"))
+    _write_if_changed(out_dir / "nct_ids.txt", ("\n".join(ids) + "\n").encode("utf-8"))
     return paths
 
 
@@ -196,10 +259,13 @@ def build_top_datasets(
     raw_path: str | Path,
     output_root: str | Path,
     labels_dir: str | Path = LABELS_DIR,
+    top_features_path: str | Path | None = TOP_FEATURES_PATH,
 ) -> dict[str, dict[str, Any]]:
     """Build one labeled dataset per phase from one registry snapshot; return the manifests.
 
-    Output goes to ``<output_root>/phase_<P>/``. Nothing is built if any of them exists.
+    Output goes to ``<output_root>/phase_<P>/``. Nothing is built if any of them exists. The TOP
+    feature table at ``top_features_path`` is joined to the registry features; pass ``None`` to
+    build from the registry features alone.
     """
     output_root, labels_dir = Path(output_root), Path(labels_dir)
     outputs = {phase: output_root / f"phase_{phase}" for phase in PHASES}
@@ -212,14 +278,50 @@ def build_top_datasets(
             output,
             labels_path=labels_dir / labels_filename(phase),
             label_description=LABEL_DESCRIPTION.format(phase=phase),
+            extra_features_path=top_features_path,
         )
         for phase, output in outputs.items()
     }
 
 
+def _verified_top_file(top_dir: Path, phase: str, split: str) -> Path:
+    """Path to one TOP file, after checking that it exists and matches its pinned checksum."""
+    name = top_filename(phase, split)
+    path = top_dir / name
+    if not path.exists():
+        raise FileNotFoundError(f"missing {path}; run `python -m trial_outcome.data.top labels`")
+    if _sha256(path) != TOP_SHA256[name]:
+        raise ValueError(f"{path} does not match the pinned TOP commit; download it again")
+    return path
+
+
+def _parse_list(text: str) -> list[str]:
+    """Parse one of TOP's list cells, a Python list literal of strings such as ``['a', 'b']``."""
+    if not text.strip():
+        return []
+    try:
+        value = ast.literal_eval(text)
+    except (SyntaxError, ValueError) as error:
+        raise ValueError(f"not a list of strings: {text[:80]!r}") from error
+    if not isinstance(value, list) or any(not isinstance(item, str) for item in value):
+        raise ValueError(f"not a list of strings: {text[:80]!r}")
+    return value
+
+
 def _sha256(path: Path) -> str:
     with path.open("rb") as stream:
         return hashlib.file_digest(stream, "sha256").hexdigest()
+
+
+def _write_if_changed(path: Path, content: bytes) -> None:
+    """Write ``content`` atomically unless ``path`` already holds exactly that content.
+
+    Leaving an unchanged file alone keeps its timestamp, so tools that compare timestamps, such
+    as `make`, don't treat steps downstream of it as out of date.
+    """
+    if path.exists() and path.read_bytes() == content:
+        return
+    _write_bytes_atomic(path, content)
 
 
 def _write_bytes_atomic(path: Path, content: bytes) -> None:
@@ -248,13 +350,21 @@ def _summarize(top: pd.DataFrame) -> dict[str, Any]:
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description="TOP benchmark labels and per-phase datasets.")
     commands = parser.add_subparsers(dest="command", required=True)
-    labels = commands.add_parser("labels", help="download TOP and write per-phase labels files")
+    labels = commands.add_parser(
+        "labels", help="download TOP; write per-phase labels files and the TOP feature table"
+    )
     labels.add_argument("--top-dir", type=Path, default=TOP_DIR)
     labels.add_argument("--out-dir", type=Path, default=LABELS_DIR)
+    labels.add_argument("--features-out", type=Path, default=TOP_FEATURES_PATH)
     datasets = commands.add_parser("datasets", help="build one labeled dataset per phase")
     datasets.add_argument("--raw", required=True, type=Path, help="registry snapshot (.jsonl)")
     datasets.add_argument("--output-root", type=Path, default=PROCESSED_DATA_DIR / "top")
     datasets.add_argument("--labels-dir", type=Path, default=LABELS_DIR)
+    features = datasets.add_mutually_exclusive_group()
+    features.add_argument("--top-features", type=Path, default=TOP_FEATURES_PATH)
+    features.add_argument(
+        "--registry-only", action="store_true", help="leave out the TOP feature table"
+    )
     args = parser.parse_args(argv)
 
     try:
@@ -262,9 +372,19 @@ def main(argv: list[str] | None = None) -> None:
             download_top(args.top_dir)
             top = load_top(args.top_dir)
             write_label_files(top, args.out_dir)
-            result = {"labels_dir": str(args.out_dir), **_summarize(top)}
+            write_top_features(load_top_features(args.top_dir), args.features_out)
+            result = {
+                "labels_dir": str(args.out_dir),
+                "top_features": str(args.features_out),
+                **_summarize(top),
+            }
         else:
-            manifests = build_top_datasets(args.raw, args.output_root, args.labels_dir)
+            manifests = build_top_datasets(
+                args.raw,
+                args.output_root,
+                args.labels_dir,
+                None if args.registry_only else args.top_features,
+            )
             result = {
                 "output_root": str(args.output_root),
                 **{f"phase_{p}": m["counts"] for p, m in manifests.items()},

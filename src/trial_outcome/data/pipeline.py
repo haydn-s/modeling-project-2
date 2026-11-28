@@ -18,6 +18,7 @@ import pandas as pd
 
 from trial_outcome.config import PROCESSED_DATA_DIR
 from trial_outcome.data.ctgov import read_jsonl
+from trial_outcome.data.validation import validate_nct_ids
 from trial_outcome.features import build_features, get_path, nct_id
 from trial_outcome.labeling import build_labels
 
@@ -38,6 +39,7 @@ def build_dataset(
     labels_path: str | Path | None = None,
     label_description: str | None = None,
     study_type: str = "INTERVENTIONAL",
+    extra_features_path: str | Path | None = None,
 ) -> dict[str, Any]:
     """Write Parquet tables and a provenance manifest into a new output directory.
 
@@ -45,6 +47,11 @@ def build_dataset(
     table; only matched labels enter ``dataset.parquet``. All exclusions and unmatched
     labels are reported. Existing outputs are never overwritten, and failed builds
     never publish a partial output directory. Returns the manifest.
+
+    ``extra_features_path`` is an optional Parquet table indexed by ``nct_id`` whose columns
+    are added to the registry features, such as :func:`trial_outcome.data.top.load_top_features`.
+    The registry still defines the cohort: trials missing from the extra table get missing
+    values, and extra rows for trials outside the cohort are ignored.
     """
     raw_path, output_dir = Path(raw_path), Path(output_dir)
     if study_type not in STUDY_TYPES:
@@ -95,6 +102,13 @@ def build_dataset(
     features = features.loc[included]
     if features.empty:
         raise ValueError(f"no studies remain in the {study_type} cohort")
+    if extra_features_path is not None:
+        extra_features_path = Path(extra_features_path)
+        inputs["extra_features"] = _file_info(extra_features_path)
+        features = features.join(
+            _read_extra_features(extra_features_path, reserved=[*features.columns, "label"]),
+            how="left",
+        )
 
     tables = {"features.parquet": features, "cohort_audit.parquet": audit}
     counts = {
@@ -158,6 +172,16 @@ def build_dataset(
             raise FileExistsError(f"output directory already exists: {output_dir}")
         staging.rename(output_dir)
     return manifest
+
+
+def _read_extra_features(path: Path, reserved: list[str]) -> pd.DataFrame:
+    """Read an extra feature table and check that it can join the registry features."""
+    extra = pd.read_parquet(path)
+    validate_nct_ids(pd.Series(extra.index, dtype="string"), source=str(path))
+    clashing = sorted(set(extra.columns) & set(reserved))
+    if clashing:
+        raise ValueError(f"{path}: columns already in the registry features: {clashing}")
+    return extra
 
 
 def main(argv: list[str] | None = None) -> None:

@@ -11,8 +11,11 @@ TORCH_BACKEND ?= auto
 # TOP_DATE=$$(date +%F); to rebuild from the same snapshot, pass a new TOP_OUTPUT.
 TOP_DATE ?= 2026-11-22
 TOP_LABELS := data/interim/top_labels
+TOP_FEATURES := data/interim/top_features.parquet
 TOP_SNAPSHOT ?= data/raw/ctgov_top_$(TOP_DATE).jsonl
-TOP_OUTPUT ?= data/processed/top_$(TOP_DATE)
+# v2 adds TOP's ICD codes and eligibility criteria text to the registry features. The first build,
+# data/processed/top_$(TOP_DATE), has registry features only.
+TOP_OUTPUT ?= data/processed/top_$(TOP_DATE)_v2
 # Phases are built in order (I, II, III), so phase III's manifest marks a finished build.
 TOP_BUILT := $(TOP_OUTPUT)/phase_III/manifest.json
 
@@ -56,12 +59,19 @@ baseline: $(TOP_BUILT) ## Compare the regularized logit with XGBoost chain lengt
 models: $(TOP_BUILT) ## Tune logit, XGBoost, and random forest; compare them on each TOP test set
 	$(BIN)/python -m trial_outcome.compare --dataset-root $(TOP_OUTPUT) --labels-dir $(TOP_LABELS)
 
-$(TOP_BUILT): $(TOP_SNAPSHOT)
-	$(BIN)/python -m trial_outcome.data.top datasets \
-		--raw $(TOP_SNAPSHOT) --labels-dir $(TOP_LABELS) --output-root $(TOP_OUTPUT)
+# Inputs are order-only (after `|`): make creates a missing one, but never redoes a step because an
+# input is newer. A registry snapshot is a dated download that must not be replaced, and builds are
+# never overwritten; for new ones, pass a new TOP_DATE or TOP_OUTPUT.
+$(TOP_BUILT): | $(TOP_SNAPSHOT) $(TOP_FEATURES)
+	$(BIN)/python -m trial_outcome.data.top datasets --raw $(TOP_SNAPSHOT) \
+		--labels-dir $(TOP_LABELS) --top-features $(TOP_FEATURES) --output-root $(TOP_OUTPUT)
 
 $(TOP_LABELS)/nct_ids.txt:
-	$(BIN)/python -m trial_outcome.data.top labels --out-dir $(TOP_LABELS)
+	$(BIN)/python -m trial_outcome.data.top labels --out-dir $(TOP_LABELS) --features-out $(TOP_FEATURES)
 
-$(TOP_SNAPSHOT): $(TOP_LABELS)/nct_ids.txt
-	$(BIN)/python -m trial_outcome.data.ctgov --ids-file $< --out $@
+# Written by the same command as the labels; this rule covers labels made before it existed.
+$(TOP_FEATURES): | $(TOP_LABELS)/nct_ids.txt
+	$(BIN)/python -m trial_outcome.data.top labels --out-dir $(TOP_LABELS) --features-out $@
+
+$(TOP_SNAPSHOT): | $(TOP_LABELS)/nct_ids.txt
+	$(BIN)/python -m trial_outcome.data.ctgov --ids-file $(TOP_LABELS)/nct_ids.txt --out $@

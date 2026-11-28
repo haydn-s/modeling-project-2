@@ -1,0 +1,81 @@
+feature,importance
+sponsor_class_INDUSTRY,0.25061960899789687
+sponsor_class_OTHER,0.12818163066298938
+intervention_types=radiation,0.04156238774376603
+sponsor_class_NIH,0.034514220767258214
+conditions=neoplasms,0.031339345976133894
+arm_count,0.025416276224634497
+missingindicator_arm_count,0.023470205147904582
+intervention_types=procedure,0.02255633187347486
+masking_NONE,0.02124024274860366
+missingindicator_minimum_age_years,0.02047523393056019
+missingindicator_maximum_age_years,0.019525510326529164
+maximum_age_years,0.018776078809179603
+allocation_NON_RANDOMIZED,0.01821833582094782
+conditions=lung cancer,0.01772094625817151
+minimum_age_years,0.017297274599205197
+intervention_model_SINGLE_GROUP,0.0171369511503678
+allocation_NA,0.016730082412549373
+allocation_missing,0.015877266643410395
+allocation_RANDOMIZED,0.015869540391673178
+conditions=healthy,0.014452798584003064
+intervention_types=biological,0.013257987210755802
+sex_FEMALE,0.01225173326026897
+phases=phase2,0.011691721570345783
+masking_DOUBLE,0.011650876557997767
+conditions=multiple myeloma,0.01146215056585879
+conditions=breast cancer,0.011380196045563265
+intervention_model_missing,0.011128422311879639
+intervention_model_PARALLEL,0.010721392455262931
+conditions=leukemia,0.010265901230619934
+masking_TRIPLE,0.010176019292919974
+masking_QUADRUPLE,0.009568162770487618
+healthy_volunteers_False,0.009477558126501728
+intervention_types=other,0.009325477813407597
+primary_purpose_TREATMENT,0.009243355655056058
+sex_MALE,0.009210350515794335
+conditions=ovarian cancer,0.008990804267057029
+healthy_volunteers_True,0.008840065058411015
+primary_purpose_BASIC_SCIENCE,0.007959068400733406
+intervention_model_CROSSOVER,0.007798325391094707
+sex_ALL,0.00728837647829402
+conditions=prostate cancer,0.006798362524321098
+conditions=cancer,0.006568784534915103
+conditions=lymphoma,0.005718690090218764
+"conditions=unspecified adult solid tumor, protocol specific",0.004403976994390686
+conditions=pancreatic cancer,0.0038419718085847226
+study_type_INTERVENTIONAL,0.0
+intervention_model_SEQUENTIAL,0.0
+intervention_model_infrequent_sklearn,0.0
+primary_purpose_OTHER,0.0
+primary_purpose_PREVENTION,0.0
+primary_purpose_missing,0.0
+primary_purpose_infrequent_sklearn,0.0
+masking_SINGLE,0.0
+masking_missing,0.0
+sponsor_class_NETWORK,0.0
+sponsor_class_infrequent_sklearn,0.0
+healthy_volunteers_infrequent_sklearn,0.0
+phases=early_phase1,0.0
+phases=phase1,0.0
+conditions=acute myeloid leukemia,0.0
+conditions=advanced cancer,0.0
+conditions=advanced solid tumors,0.0
+conditions=asthma,0.0
+conditions=chronic lymphocytic leukemia,0.0
+conditions=colon cancer,0.0
+conditions=colorectal cancer,0.0
+"conditions=diabetes mellitus, type 2",0.0
+conditions=fallopian tube cancer,0.0
+conditions=head and neck cancer,0.0
+conditions=hiv infections,0.0
+conditions=melanoma,0.0
+conditions=metastatic breast cancer,0.0
+conditions=myelodysplastic syndromes,0.0
+conditions=non small cell lung cancer,0.0
+conditions=non-small cell lung cancer,0.0
+conditions=rheumatoid arthritis,0.0
+conditions=tumors,0.0
+conditions=type 2 diabetes mellitus,0.0
+intervention_types=drug,0.0
+intervention_types=genetic,0.0

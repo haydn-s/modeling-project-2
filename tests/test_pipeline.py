@@ -127,3 +127,31 @@ def test_cli_builds_and_reports_errors(tmp_path, raw_path, capsys):
         main(args)
     assert error.value.code == 2
     assert "already exists" in capsys.readouterr().err
+
+
+def test_extra_features_join_the_cohort_by_id(tmp_path, raw_path):
+    extra = tmp_path / "extra.parquet"
+    pd.DataFrame(
+        {"criteria": ["adults", "children"]},
+        index=pd.Index(["NCT00000001", "NCT00000003"], name="nct_id"),
+    ).astype("string").to_parquet(extra)
+
+    manifest = build_dataset(raw_path, tmp_path / "out", extra_features_path=extra)
+
+    features = pd.read_parquet(tmp_path / "out" / "features.parquet")
+    # The registry defines the cohort: NCT00000003 is observational, NCT00000002 has no extra row.
+    assert features["criteria"].to_dict() == {"NCT00000001": "adults", "NCT00000002": None}
+    assert manifest["inputs"]["extra_features"]["sha256"] == (
+        hashlib.sha256(extra.read_bytes()).hexdigest()
+    )
+    assert manifest["feature_missing_counts"]["criteria"] == 1
+
+
+@pytest.mark.parametrize("column", ["arm_count", "label"])
+def test_extra_features_may_not_replace_columns(tmp_path, raw_path, column):
+    extra = tmp_path / "extra.parquet"
+    pd.DataFrame({column: [1]}, index=pd.Index(["NCT00000001"], name="nct_id")).to_parquet(extra)
+
+    with pytest.raises(ValueError, match="already in the registry features"):
+        build_dataset(raw_path, tmp_path / "out", extra_features_path=extra)
+    assert not (tmp_path / "out").exists()
